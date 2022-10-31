@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-card elevation="8" class="rounded-xl">
+        <v-card elevation="8" class="">
             <v-card-title
                 primary-title
                 class="font-weight-black primary--text text-subtitle-1 text-uppercase"
@@ -19,7 +19,7 @@
                 max-width="700px"
                 transition="dialog-transition"
             >
-                <v-card class="rounded-xl">
+                <v-card class="">
                     <v-toolbar dark color="#4527a0">
                         <v-toolbar-title>Agregar Nuevo Género Musical</v-toolbar-title>
                     </v-toolbar>
@@ -33,7 +33,7 @@
                             ></v-text-field>
                         </v-form>
                         <v-card-actions>
-                            <v-btn color="success">Guardar</v-btn>
+                            <v-btn color="primary">Guardar</v-btn>
                             <v-btn dark color="error" @click="dialog = !dialog"
                                 >Cancelar</v-btn
                             >
