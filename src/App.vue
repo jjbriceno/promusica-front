@@ -13,6 +13,7 @@
       <UserMenu v-if="$store.state.auth" />
     </v-app-bar>
     <v-main>
+      <Notification :value="true"/>
       <v-container fluid fill-height>
         <v-slide-x-transition mode="out-in">
           <router-view></router-view>
@@ -25,10 +26,12 @@
 <script>
 import Drawer from './components/Drawer.vue';
 import UserMenu from './components/UserMenu.vue';
+import Notification from './components//Notification.vue';
 export default {
   components: {
     Drawer,
     UserMenu,
+    Notification,
   },
   data() {
     return {};

@@ -22,43 +22,62 @@
             <v-toolbar-title>Agregar Nueva Partitura</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
-            <v-form>
+            <v-form @submit.prevent="submit" ref="form">
               <v-text-field
+                v-model="form.title"
                 placeholder="Título"
                 name="title"
                 label="Título"
                 id="id"
                 outlined></v-text-field>
-              <v-select
-                :items="authors"
-                v-model="author_id"
+              <v-autocomplete
+                v-model="form.authorId"
+                item-text="full_name"
+                item-value="id"
+                outlined
                 label="Autor"
-                outlined></v-select>
+                :items="authors"></v-autocomplete>
               <v-select
                 :items="genders"
-                v-model="gender_id"
+                item-text="name"
+                item-value="id"
+                v-model="form.genderId"
                 label="Géneros"
                 outlined></v-select>
               <!-- Location -->
-              <!-- Archivador -->
+              <!-- Estante -->
               <v-select
                 :items="drawers"
-                v-model="drawer_id"
-                label="Archivador"
+                item-text="name"
+                item-value="id"
+                v-model="form.drawerId"
+                label="Estante"
                 outlined></v-select>
               <!-- Gaveta -->
               <v-select
                 :items="cabinets"
-                v-model="cabinets_id"
+                item-text="name"
+                item-value="id"
+                v-model="form.cabinetId"
                 label="Gaveta"
                 outlined></v-select>
+              <v-text-field
+                v-model.number="form.cuantity"
+                placeholder="Cantidad"
+                name="Cantidad"
+                label="Cantidad"
+                id="id"
+                type="number"
+                min="1"
+                outlined></v-text-field>
+              <v-card-actions>
+                <v-btn type="submit" color="primary" @click="save"
+                  >Guardar</v-btn
+                >
+                <v-spacer></v-spacer>
+                <v-btn dark color="red" @click="cancel">Cancelar</v-btn>
+              </v-card-actions>
             </v-form>
-            <v-card-actions>
-              <v-btn color="primary">Guardar</v-btn>
-              <v-btn dark color="error" @click="dialog = !dialog"
-                >Cancelar</v-btn
-              >
-            </v-card-actions>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -72,7 +91,7 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="users"
+        :items="musicSheets"
         sort-by="id"
         loading="true"
         :search="search">
@@ -81,7 +100,7 @@
             <tr class="on-hover-bg" :style="hoverColors(hover)">
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>
-              <td>{{ item.author }}</td>
+              <td>{{ item.author.full_name }}</td>
               <td>
                 <v-progress-linear
                   :value="item.cuantity"
@@ -92,8 +111,12 @@
                   {{ item.cuantity }}
                 </v-progress-linear>
               </td>
-              <td>{{ item.gender }}</td>
-              <td>{{ item.location }}</td>
+              <td>{{ item.gender.name }}</td>
+              <td>
+                {{
+                  item.location.drawer_name + ' ' + item.location.cabinet_name
+                }}
+              </td>
               <td>
                 <v-btn fab small class="white--text" color="primary">
                   <v-icon> mdi-pencil </v-icon>
@@ -111,11 +134,21 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
+      form: {
+        title: '',
+        authorId: '',
+        genderId: '',
+        drawerId: '',
+        cabinetId: '',
+        cuantity: '',
+      },
+      authors: '',
+      genders: '',
+      drawers: '',
+      cabinets: '',
       search: '',
       dialog: false,
       headers: [
@@ -160,287 +193,94 @@ export default {
           align: 'center',
         },
       ],
-      users: [],
+      musicSheets: [],
+      errors: [],
     };
   },
   async created() {
     const vm = this;
-    vm.users = [
-      {
-        id: 1,
-        title: 'Civil Brand',
-        author: 'Ariella Rains',
-        cuantity: 61,
-        gender: 'Drama',
-        location: 'F9-A4-42-52-D1-6C',
-      },
-      {
-        id: 2,
-        title: 'Night Tide',
-        author: 'Vaughan Laird-Craig',
-        cuantity: 15,
-        gender: 'Drama',
-        location: '6A-C0-F6-24-70-C3',
-      },
-      {
-        id: 3,
-        title: 'Sicily! (Sicilia!)',
-        author: 'Haleigh Chaldecott',
-        cuantity: 31,
-        gender: 'Drama',
-        location: 'B1-E5-25-88-D3-36',
-      },
-      {
-        id: 4,
-        title: 'Dinner Rush',
-        author: 'Meggy Elkins',
-        cuantity: 38,
-        gender: 'Drama',
-        location: 'CE-B4-9E-60-A6-92',
-      },
-      {
-        id: 5,
-        title: 'Stranger, The (Straniero, Lo)',
-        author: 'Quint Cheel',
-        cuantity: 88,
-        gender: 'Drama',
-        location: '35-7D-7D-61-7C-4A',
-      },
-      {
-        id: 6,
-        title: 'Chameleon, The ',
-        author: 'Dev Baldoni',
-        cuantity: 63,
-        gender: 'Drama',
-        location: 'DD-05-9C-38-DF-3A',
-      },
-      {
-        id: 7,
-        title: 'Suburbia',
-        author: 'Issy Rimell',
-        cuantity: 81,
-        gender: 'Drama',
-        location: '17-C4-28-45-40-A5',
-      },
-      {
-        id: 8,
-        title: 'Care Bears Movie, The',
-        author: 'Vita Logan',
-        cuantity: 4,
-        gender: 'Animation|Children|Fantasy',
-        location: 'C3-4A-1F-4C-E3-1B',
-      },
-      {
-        id: 9,
-        title: 'Amen',
-        author: 'Harlene Dronsfield',
-        cuantity: 47,
-        gender: 'Drama|Musical',
-        location: '34-5A-F6-02-F7-F7',
-      },
-      {
-        id: 10,
-        title: 'Gatekeepers, The',
-        author: 'Tracey Anning',
-        cuantity: 82,
-        gender: 'Documentary',
-        location: 'E7-B8-0E-65-21-3E',
-      },
-      {
-        id: 11,
-        title: 'Sex & the Other Man',
-        author: "Marquita O'Carrol",
-        cuantity: 31,
-        gender: 'Comedy|Drama',
-        location: 'C0-BE-AE-A1-D7-AF',
-      },
-      {
-        id: 12,
-        title: 'Dragon Gate Inn (Dragon Inn) (Long men kezhan)',
-        author: "Zach O' Clovan",
-        cuantity: 88,
-        gender: 'Action|Adventure',
-        location: 'C8-E3-D8-8D-9B-C1',
-      },
-      {
-        id: 13,
-        title: 'Opening Night',
-        author: 'Maritsa Shortall',
-        cuantity: 21,
-        gender: 'Drama',
-        location: 'FB-29-49-53-3C-55',
-      },
-      {
-        id: 14,
-        title: "McHale's Navy",
-        author: 'Thane Neising',
-        cuantity: 4,
-        gender: 'Comedy|War',
-        location: '95-92-9D-FA-4F-66',
-      },
-      {
-        id: 15,
-        title: 'Jellyfish (Meduzot)',
-        author: 'Derby Reicherz',
-        cuantity: 61,
-        gender: 'Drama',
-        location: '15-D4-4E-AD-DB-33',
-      },
-      {
-        id: 16,
-        title: 'Up Periscope',
-        author: 'Ida Issacson',
-        cuantity: 47,
-        gender: 'Action|Drama|War',
-        location: 'DC-9E-C3-45-93-27',
-      },
-      {
-        id: 17,
-        title: 'Candleshoe',
-        author: 'Peyton Doeg',
-        cuantity: 79,
-        gender: 'Adventure|Children|Comedy',
-        location: '61-1A-80-5F-9F-10',
-      },
-      {
-        id: 18,
-        title: 'Lassie Come Home',
-        author: 'Elnore Boldecke',
-        cuantity: 64,
-        gender: 'Adventure|Children|Drama',
-        location: '6D-0F-0F-03-B7-46',
-      },
-      {
-        id: 19,
-        title: 'Beverly Hills Chihuahua 2',
-        author: 'Carlita Herculson',
-        cuantity: 51,
-        gender: 'Children|Comedy',
-        location: 'E0-18-9D-03-BC-FF',
-      },
-      {
-        id: 20,
-        title: 'Waking Madison ',
-        author: 'Libbi Clemmen',
-        cuantity: 53,
-        gender: 'Drama',
-        location: '33-8F-98-13-71-D0',
-      },
-      {
-        id: 21,
-        title: 'Beats Being Dead (Dreileben - Etwas Besseres als den Tod)',
-        author: 'Orlan Plain',
-        cuantity: 9,
-        gender: 'Drama',
-        location: '86-61-0D-49-7D-97',
-      },
-      {
-        id: 22,
-        title: 'Professional, The (Le professionnel)',
-        author: 'Carolan Stobie',
-        cuantity: 100,
-        gender: 'Action|Drama|Thriller',
-        location: 'F2-1A-52-DA-C3-FF',
-      },
-      {
-        id: 23,
-        title: 'Grey Gardens',
-        author: 'Sherm Jammet',
-        cuantity: 85,
-        gender: 'Drama',
-        location: '15-8B-C3-EE-35-7A',
-      },
-      {
-        id: 24,
-        title: 'Switch, The',
-        author: 'Talia McKall',
-        cuantity: 89,
-        gender: 'Comedy|Romance',
-        location: '8C-AE-AE-2D-EC-0D',
-      },
-      {
-        id: 25,
-        title: 'Personal Best',
-        author: 'Minni Cluer',
-        cuantity: 80,
-        gender: 'Drama',
-        location: 'CA-5D-21-16-50-DF',
-      },
-      {
-        id: 26,
-        title: 'Primal',
-        author: 'Jordana Ponsford',
-        cuantity: 92,
-        gender: 'Horror|Thriller',
-        location: '4F-4D-88-D2-9D-FC',
-      },
-      {
-        id: 27,
-        title: "Sharpe's Sword",
-        author: 'Tedd Lampbrecht',
-        cuantity: 48,
-        gender: 'Action|Adventure|War',
-        location: 'ED-02-73-50-D7-C6',
-      },
-      {
-        id: 28,
-        title: 'Monsters University',
-        author: 'Noak Lanchester',
-        cuantity: 45,
-        gender: 'Adventure|Animation|Comedy',
-        location: 'F1-A5-DE-80-BE-9D',
-      },
-      {
-        id: 29,
-        title: 'Letter, The',
-        author: 'Dal Judgkins',
-        cuantity: 14,
-        gender: 'Drama|Film-Noir',
-        location: '30-BC-0A-3A-8C-85',
-      },
-      {
-        id: 30,
-        title: 'Rio Bravo',
-        author: 'Rad Kermath',
-        cuantity: 82,
-        gender: 'Western',
-        location: '40-AB-54-19-25-C3',
-      },
-      {
-        id: 31,
-        title: 'First Deadly Sin, The',
-        author: 'Tyrone Buffey',
-        cuantity: 19,
-        gender: 'Thriller',
-        location: '27-01-4A-30-98-53',
-      },
-      
-    ];
-  
-    /** API call to backend */
-    // let response = await fetch(
-    //     "https://jsonplaceholder.typicode.com/users"
-    // );
-    // response = await response.json();
-    // response.filter((user) => {
-    //     vm.users.push({
-    //         id: user.id,
-    //         name: user.name,
-    //         username: user.username,
-    //         email: user.email,
-    //         address: user.address.street,
-    //         phone: user.phone,
-    //         website: user.website,
-    //         company: user.company.name,
-    //         cuantity: 25,
-    //     });
-    // });
+    await vm.getMusicSheets();
+    await vm.getAuthors();
+    await vm.getGenders();
+    await vm.getDrawers();
+    await vm.getCabinets();
   },
   methods: {
     hoverColors(hover) {
       return {
         color: hover ? 'white' : 'inherit',
         background: hover ? '#4527A0' : 'inherit',
+      };
+    },
+
+    async getMusicSheets() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/music-sheets');
+        vm.musicSheets = response.data.music_sheet;
+      } catch (error) {}
+    },
+
+    async getAuthors() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/authors');
+        vm.authors = response.data.authors;
+      } catch (error) {}
+    },
+
+    async getGenders() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/genders');
+        vm.genders = response.data.genders;
+      } catch (error) {}
+    },
+
+    async getDrawers() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/drawers');
+        vm.drawers = response.data.drawers;
+      } catch (error) {}
+    },
+
+    async getCabinets() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/cabinets');
+        vm.cabinets = response.data.cabinets;
+      } catch (error) {}
+    },
+
+    async save() {
+      const vm = this;
+      try {
+        let response = await axios.post('api/music-sheets/store', {
+          ...vm.form,
+        });
+        vm.musicSheets.push(response.data.item);
+        this.$refs.form.reset();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    cancel() {
+      const vm = this;
+      vm.dialog = !vm.dialog;
+      vm.reset();
+    },
+
+    reset() {
+      const vm = this;
+      vm.form = {
+        title: '',
+        authorId: '',
+        genderId: '',
+        drawerId: '',
+        cabinetId: '',
+        cuantity: '',
       };
     },
   },
