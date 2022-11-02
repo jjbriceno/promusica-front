@@ -6,23 +6,38 @@
         class="font-weight-black primary--text text-subtitle-1 text-uppercase">
         Partituras
         <v-spacer></v-spacer>
-        <v-btn color="success" fab small @click="dialog = !dialog">
-          <v-icon large>mdi-plus</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="success"
+              fab
+              small
+              @click="addNew"
+              v-bind="attrs"
+              v-on="on">
+              <v-icon large>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <span>Agregar nueva partitura</span>
+        </v-tooltip>
       </v-card-title>
       <v-card-subtitle> Lista de partituras </v-card-subtitle>
       <hr style="color: #4527a0" />
       <v-dialog
+        @click:outside="cancel"
+        @keydown.esc="cancel"
         v-model="dialog"
         :overlay="false"
         max-width="700px"
         transition="dialog-transition">
         <v-card class="">
           <v-toolbar dark color="#4527a0">
-            <v-toolbar-title>Agregar Nueva Partitura</v-toolbar-title>
+            <v-toolbar-title>{{
+              isEdit ? 'Editar partitura' : 'Agregar nueva partitura'
+            }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
-            <v-form @submit.prevent="submit" ref="form">
+            <v-form @submit.prevent="save" ref="form">
               <v-text-field
                 v-model="form.title"
                 placeholder="Título"
@@ -71,14 +86,29 @@
                 min="1"
                 outlined></v-text-field>
               <v-card-actions>
-                <v-btn type="submit" color="primary" @click="save"
-                  >Guardar</v-btn
-                >
+                <v-btn type="submit" color="primary">Guardar</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn dark color="red" @click="cancel">Cancelar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-card>
+          <v-card-title class="text-h5"
+            >¿Está seguro de eliminar la partitura?</v-card-title
+          >
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cancelItemDelete"
+              >Cancel</v-btn
+            >
+            <v-btn color="blue darken-1" text @click="deleteItem(itemToDelete)"
+              >Aceptar</v-btn
+            >
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
       </v-dialog>
       <v-card-title>
@@ -105,7 +135,7 @@
                 <v-progress-linear
                   :value="item.cuantity"
                   height="12"
-                  color="green"
+                  color="primary"
                   dark
                   rounded>
                   {{ item.cuantity }}
@@ -118,12 +148,36 @@
                 }}
               </td>
               <td>
-                <v-btn fab small class="white--text" color="primary">
-                  <v-icon> mdi-pencil </v-icon>
-                </v-btn>
-                <v-btn fab small class="white--text" color="red">
-                  <v-icon> mdi-delete </v-icon>
-                </v-btn>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text"
+                      color="primary mr-1"
+                      @click="editItem(item)"
+                      v-on="on"
+                      v-bind="attrs">
+                      <v-icon> mdi-pencil </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Editar partitura</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text"
+                      color="red"
+                      @click="comfirmDelete(item)"
+                      v-on="on"
+                      v-bind="attrs">
+                      <v-icon> mdi-delete </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Eliminar partitura</span>
+                </v-tooltip>
               </td>
             </tr>
           </v-hover>
@@ -134,17 +188,17 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      form: {
-        title: '',
-        authorId: '',
-        genderId: '',
-        drawerId: '',
-        cabinetId: '',
-        cuantity: '',
-      },
+      form: {},
+      isEdit: false,
+      editIndex: -1,
+      dialogDelete: false,
+      itemToDelete: '',
+      deleteIndex: '',
       authors: '',
       genders: '',
       drawers: '',
@@ -256,11 +310,20 @@ export default {
     async save() {
       const vm = this;
       try {
-        let response = await axios.post('api/music-sheets/store', {
-          ...vm.form,
-        });
-        vm.musicSheets.push(response.data.item);
+        let response = await axios.post(
+          `api/music-sheets/${vm.isEdit ? 'edit' : 'store'}`,
+          {
+            ...vm.form,
+          }
+        );
+        if (vm.isEdit) {
+          Object.assign(vm.musicSheets[vm.editIndex], response.data.item);
+        } else {
+          vm.musicSheets.push(response.data.item);
+        }
+
         this.$refs.form.reset();
+        vm.dialog = !vm.dialog;
       } catch (error) {
         console.log(error);
       }
@@ -274,14 +337,59 @@ export default {
 
     reset() {
       const vm = this;
+      vm.form = Object.assign({}, {});
+    },
+
+    comfirmDelete(item) {
+      const vm = this;
+      vm.itemToDelete = Object.assign({}, item);
+      vm.deleteIndex = vm.musicSheets.findIndex((obj) => obj.id === item.id);
+      vm.dialogDelete = !vm.dialogDelete;
+    },
+
+    cancelItemDelete() {
+      const vm = this;
+      vm.itemToDelete = Object.assign({}, {});
+      vm.deleteIndex = '';
+      vm.dialogDelete = !vm.dialogDelete;
+    },
+
+    editItem(item) {
+      const vm = this;
+
+      vm.editIndex = vm.musicSheets.indexOf(item);
+
+      vm.isEdit = true;
+
       vm.form = {
-        title: '',
-        authorId: '',
-        genderId: '',
-        drawerId: '',
-        cabinetId: '',
-        cuantity: '',
+        id: item.id,
+        title: item.title,
+        authorId: item.author.id,
+        genderId: item.gender.id,
+        locationId: item.location.id,
+        drawerId: parseInt(item.location.drawer_id),
+        cabinetId: parseInt(item.location.cabinet_id),
+        cuantity: item.cuantity,
       };
+      vm.dialog = true;
+    },
+
+    async deleteItem(item) {
+      const vm = this;
+
+      try {
+        await axios.post(`api/music-sheets/destroy/${item.id}`);
+        vm.$nextTick(() => {
+          vm.musicSheets.splice(vm.deleteIndex, 1);
+        });
+        vm.dialogDelete = false;
+      } catch (error) {}
+    },
+
+    addNew() {
+      const vm = this;
+      vm.dialog = !vm.dialog;
+      vm.isEdit = false;
     },
   },
 };

@@ -58,7 +58,7 @@ export default {
   data: () => ({
     showPassword: false,
     form: {
-      email: 'bayer.mae@example.net',
+      email: 'hkunze@example.net',
       password: 'password',
     },
   }),

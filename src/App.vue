@@ -13,7 +13,7 @@
       <UserMenu v-if="$store.state.auth" />
     </v-app-bar>
     <v-main>
-      <Notification :value="true"/>
+      <!-- <Notification :value="true"/> -->
       <v-container fluid fill-height>
         <v-slide-x-transition mode="out-in">
           <router-view></router-view>
