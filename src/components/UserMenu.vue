@@ -23,7 +23,7 @@
         </v-list-item>
       </v-btn>
     </template>
-    <v-list dense>
+    <v-list dense dark color="deep-purple darken-3">
       <v-list-item-group>
         <v-list-item v-for="(item, i) in items" :key="i">
           <v-list-item-icon>
@@ -58,9 +58,9 @@ export default {
       const vm = this;
       vm[name]();
     },
-    logout() {
+    async logout() {
       const vm = this;
-      vm.$store.dispatch('logout');
+      await vm.$store.dispatch('logout');
       vm.$router.push('/');
     },
   },

@@ -42,7 +42,7 @@
             <v-card-actions fill-height>
               <v-row class="pb-4">
                 <v-col align="center" cols="12">
-                  <v-btn color="primary" @click="login">Inciar Sesión</v-btn>
+                  <v-btn color="primary" @click="login">Iniciar Sesión</v-btn>
                 </v-col>
               </v-row>
             </v-card-actions>

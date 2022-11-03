@@ -52,8 +52,9 @@ export default {
       selectedItem: 0,
       items: [
         { text: 'Partituras', icon: 'mdi-music-clef-treble', to: '/dashboard' },
-        { text: 'Autores', icon: 'mdi-account-multiple', to: '/authors' },
+        { text: 'Autores', icon: 'mdi-lead-pencil', to: '/authors' },
         { text: 'Géneros Musicales', icon: 'mdi-folder', to: '/genders' },
+        { text: 'Prestatario', icon: 'mdi-account-clock', to: '/borrowers' },
         { text: 'Prestamos', icon: 'mdi-timetable', to: '/loans' },
       ],
     };

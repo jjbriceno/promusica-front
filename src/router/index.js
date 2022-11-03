@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import store from '../store'
 
 
 Vue.use(VueRouter)
@@ -30,7 +30,12 @@ const routes = [
     path: '/loans',
     component: () => import(/* webpackChunkName: "login" */ '../components/Loans.vue'),
     name: 'Loans'
-  }
+  },
+  {
+    path: '/borrowers',
+    component: () => import(/* webpackChunkName: "login" */ '../components/Borrowers.vue'),
+    name: 'Borrowers'
+  },
 ]
 
 const router = new VueRouter({
@@ -38,5 +43,13 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach(async (to, from, next) => {
+  await store.dispatch("getUser");
+  if (to.fullPath !== '/' && !store.state.auth) {
+    next('/');
+  }
+  next();
+});
 
 export default router

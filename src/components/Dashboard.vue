@@ -94,21 +94,102 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="dialogDelete" max-width="500px">
+      <v-dialog v-model="dialogDelete" max-width="450px">
         <v-card>
           <v-card-title class="text-h5"
             >¿Está seguro de eliminar la partitura?</v-card-title
           >
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancelItemDelete"
-              >Cancel</v-btn
-            >
-            <v-btn color="blue darken-1" text @click="deleteItem(itemToDelete)"
+            <v-btn color="primary" dark @click="deleteItem(itemToDelete)"
               >Aceptar</v-btn
             >
             <v-spacer></v-spacer>
+            <v-btn color="red" dark @click="cancelItemDelete">Cancel</v-btn>
+            <v-spacer></v-spacer>
           </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        @click:outside="resetLoan"
+        @keydown.esc="resetLoan"
+        v-model="loanDialog"
+        :overlay="false"
+        max-width="700px"
+        transition="dialog-transition">
+        <v-card>
+          <v-toolbar dark color="#4527a0">
+            <v-toolbar-title> Realizar préstamo </v-toolbar-title>
+          </v-toolbar>
+          <v-card-text class="mt-6">
+            <v-form @submit.prevent="submit" ref="loanForm">
+              <v-autocomplete
+                :items="borrowers"
+                item-text="name"
+                item-value="id"
+                v-model="loan.borrower"
+                label="Prestatario"
+                outlined></v-autocomplete>
+              <v-text-field
+                v-model.number="loan.cuantity"
+                placeholder="Cantidad"
+                name="Cantidad"
+                label="Cantidad"
+                id="id"
+                type="number"
+                min="1"
+                :max="loan.maxCuantity"
+                outlined></v-text-field>
+              <v-text-field
+                v-model="loan.title"
+                placeholder="Título"
+                name="title"
+                label="Título"
+                id="id"
+                outlined
+                disabled></v-text-field>
+              <v-autocomplete
+                v-model="loan.authorId"
+                item-text="full_name"
+                item-value="id"
+                outlined
+                label="Autor"
+                :items="authors"
+                disabled></v-autocomplete>
+              <v-select
+                :items="genders"
+                item-text="name"
+                item-value="id"
+                v-model="loan.genderId"
+                label="Géneros"
+                outlined
+                disabled></v-select>
+              <!-- Location -->
+              <!-- Estante -->
+              <v-select
+                :items="drawers"
+                item-text="name"
+                item-value="id"
+                v-model="loan.drawerId"
+                label="Estante"
+                outlined
+                disabled></v-select>
+              <!-- Gaveta -->
+              <v-select
+                :items="cabinets"
+                item-text="name"
+                item-value="id"
+                v-model="loan.cabinetId"
+                label="Gaveta"
+                outlined
+                disabled></v-select>
+              <v-card-actions>
+                <v-btn type="submit" color="primary">Guardar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn dark color="red" @click="resetLoan">Cancelar</v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card-text>
         </v-card>
       </v-dialog>
       <v-card-title>
@@ -153,8 +234,8 @@
                     <v-btn
                       fab
                       small
-                      class="white--text"
-                      color="primary mr-1"
+                      class="white--text mr-1"
+                      color="primary"
                       @click="editItem(item)"
                       v-on="on"
                       v-bind="attrs">
@@ -168,7 +249,7 @@
                     <v-btn
                       fab
                       small
-                      class="white--text"
+                      class="white--text mr-1"
                       color="red"
                       @click="comfirmDelete(item)"
                       v-on="on"
@@ -177,6 +258,21 @@
                     </v-btn>
                   </template>
                   <span>Eliminar partitura</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text"
+                      color="green"
+                      @click="startLoan(item)"
+                      v-on="on"
+                      v-bind="attrs">
+                      <v-icon> mdi-timer-play </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Préstamo</span>
                 </v-tooltip>
               </td>
             </tr>
@@ -203,8 +299,11 @@ export default {
       genders: '',
       drawers: '',
       cabinets: '',
+      borrowers: '',
       search: '',
       dialog: false,
+      loanDialog: false,
+      loan: {},
       headers: [
         {
           text: 'Id',
@@ -258,6 +357,7 @@ export default {
     await vm.getGenders();
     await vm.getDrawers();
     await vm.getCabinets();
+    await vm.getBorrowers();
   },
   methods: {
     hoverColors(hover) {
@@ -307,6 +407,15 @@ export default {
       } catch (error) {}
     },
 
+    async getBorrowers() {
+      const vm = this;
+      try {
+        let response = await axios.get('api/borrowers');
+        vm.borrowers = response.data.borrowers;
+        console.log(vm.borrowers);
+      } catch (error) {}
+    },
+
     async save() {
       const vm = this;
       try {
@@ -322,7 +431,7 @@ export default {
           vm.musicSheets.push(response.data.item);
         }
 
-        this.$refs.form.reset();
+        vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
       } catch (error) {
         console.log(error);
@@ -390,6 +499,27 @@ export default {
       const vm = this;
       vm.dialog = !vm.dialog;
       vm.isEdit = false;
+    },
+
+    startLoan(item) {
+      const vm = this;
+      vm.loanDialog = !vm.loanDialog;
+      vm.loan = {
+        id: item.id,
+        title: item.title,
+        authorId: item.author.id,
+        genderId: item.gender.id,
+        locationId: item.location.id,
+        drawerId: parseInt(item.location.drawer_id),
+        cabinetId: parseInt(item.location.cabinet_id),
+        maxCuantity: item.cuantity,
+      };
+    },
+
+    resetLoan() {
+      const vm = this;
+      vm.loan = Object.assign({}, {});
+      vm.loanDialog = !vm.loanDialog;
     },
   },
 };
