@@ -122,12 +122,12 @@
             <v-toolbar-title> Realizar préstamo </v-toolbar-title>
           </v-toolbar>
           <v-card-text class="mt-6">
-            <v-form @submit.prevent="submit" ref="loanForm">
+            <v-form @submit.prevent="saveLoan" ref="loanForm">
               <v-autocomplete
                 :items="borrowers"
                 item-text="name"
                 item-value="id"
-                v-model="loan.borrower"
+                v-model="loan.borrowerId"
                 label="Prestatario"
                 outlined></v-autocomplete>
               <v-text-field
@@ -265,11 +265,11 @@
                       fab
                       small
                       class="white--text"
-                      color="green"
+                      color="purple"
                       @click="startLoan(item)"
                       v-on="on"
                       v-bind="attrs">
-                      <v-icon> mdi-timer-play </v-icon>
+                      <v-icon> mdi-hand-coin </v-icon>
                     </v-btn>
                   </template>
                   <span>Préstamo</span>
@@ -520,6 +520,13 @@ export default {
       const vm = this;
       vm.loan = Object.assign({}, {});
       vm.loanDialog = !vm.loanDialog;
+    },
+
+    async saveLoan() {
+      const vm = this;
+      let response = await axios.post('api/loan/store', { ...vm.loan });
+      vm.$refs.loanForm.reset();
+      console.log(response.data);
     },
   },
 };
