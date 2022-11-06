@@ -36,6 +36,7 @@
                 outlined></v-text-field>
               <v-card-actions>
                 <v-btn type="submit" color="primary">Guardar</v-btn>
+                <v-spacer></v-spacer>
                 <v-btn dark color="error" @click="cancel">Cancelar</v-btn>
               </v-card-actions>
             </v-form>
@@ -97,11 +98,15 @@
           </v-hover>
         </template>
       </v-data-table>
-      <v-dialog v-model="dialogDelete" max-width="450px">
+      <v-dialog v-model="dialogDelete" max-width="420px">
         <v-card>
           <v-card-title class="text-h5"
             >¿Está seguro de eliminar el autor?</v-card-title
           >
+          <v-card-text>
+            Eliminar este autor tambien produce la eliminación de los titulos
+            asociados al autor.
+          </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="primary" dark @click="deleteItem(itemToDelete)"
@@ -145,6 +150,7 @@ export default {
           text: 'Acciones',
           value: 'actions',
           sortable: false,
+          filterable: false,
           align: 'center',
         },
       ],
@@ -237,6 +243,9 @@ export default {
       vm.dialogDelete = !vm.dialogDelete;
     },
   },
+  mounted() {
+    document.title = "Autores";
+  }
 };
 </script>
 

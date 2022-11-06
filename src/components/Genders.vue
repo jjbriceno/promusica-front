@@ -6,9 +6,20 @@
         class="font-weight-black primary--text text-subtitle-1 text-uppercase">
         Géneros Musicales
         <v-spacer></v-spacer>
-        <v-btn color="success" fab small @click="dialog = !dialog">
-          <v-icon large>mdi-plus</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="success"
+              fab
+              small
+              @click="addNew"
+              v-bind="attrs"
+              v-on="on">
+              <v-icon large>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <span>Agregar nuevo género</span>
+        </v-tooltip>
       </v-card-title>
       <v-card-subtitle> Lista de géneros musicales </v-card-subtitle>
       <hr style="color: #4527a0" />
@@ -19,22 +30,27 @@
         transition="dialog-transition">
         <v-card class="">
           <v-toolbar dark color="#4527a0">
-            <v-toolbar-title>Agregar Nuevo Género Musical</v-toolbar-title>
+            <v-toolbar-title>{{
+              isEdit ? 'Editar género' : 'Agregar nuevo género'
+            }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
-            <v-form>
+            <v-form @submit.prevent="save" ref="form">
               <v-text-field
+                v-model="form.genderName"
                 name="name"
                 label="Nombre"
+                placeholder="Nombre"
                 id="id"
                 outlined></v-text-field>
+              <v-card-actions>
+                <v-btn type="submit" color="primary">Guardar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn dark color="error" @click="dialog = !dialog"
+                  >Cancelar</v-btn
+                >
+              </v-card-actions>
             </v-form>
-            <v-card-actions>
-              <v-btn color="primary">Guardar</v-btn>
-              <v-btn dark color="error" @click="dialog = !dialog"
-                >Cancelar</v-btn
-              >
-            </v-card-actions>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -58,12 +74,24 @@
               <td>{{ item.id }}</td>
               <td>{{ item.name }}</td>
               <td>
-                <v-btn fab small class="white--text" color="primary">
-                  <v-icon> mdi-pencil </v-icon>
-                </v-btn>
-                <v-btn fab small class="white--text" color="red">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text mr-1"
+                      color="primary"
+                      v-on="on"
+                      v-bind="attrs"
+                      @click="editItem(item)">
+                      <v-icon> mdi-pencil </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Editar género</span>
+                </v-tooltip>
+                <!-- <v-btn fab small class="white--text" color="red">
                   <v-icon> mdi-delete </v-icon>
-                </v-btn>
+                </v-btn> -->
               </td>
             </tr>
           </v-hover>
@@ -74,11 +102,18 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       search: '',
       dialog: false,
+      form: {},
+      isEdit: false,
+      editIndex: '',
+      itemToDelete: '',
+      deleteIndex: '',
       headers: [
         {
           text: 'Id',
@@ -103,11 +138,56 @@ export default {
   },
   async created() {
     const vm = this;
-    let response = await axios.get('api/genders');
-    vm.genders = response.data.genders;
-    console.log(response.data);
+    await vm.getGenders();
   },
+  mounted() {
+    document.title = 'Géneros';
+  },
+
   methods: {
+    async getGenders() {
+      const vm = this;
+      let response = await axios.get('api/genders');
+      vm.genders = response.data.genders;
+      console.log(response.data);
+    },
+    addNew() {
+      const vm = this;
+      vm.dialog = !vm.dialog;
+      vm.isEdit = false;
+    },
+    async save() {
+      const vm = this;
+      try {
+        let response = await axios.post(
+          `api/genders/${vm.isEdit ? 'edit' : 'store'}`,
+          { ...vm.form }
+        );
+        if (vm.isEdit) {
+          Object.assign(vm.genders[vm.editIndex], response.data.gender);
+        } else {
+          vm.genders.push(response.data.gender);
+        }
+
+        vm.$refs.form.reset();
+        vm.dialog = !vm.dialog;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    editItem(item) {
+      const vm = this;
+      console.log(item);
+      vm.editIndex = vm.genders.findIndex((obj) => obj.id === item.id);
+
+      vm.isEdit = true;
+
+      vm.form = {
+        id: item.id,
+        genderName: item.name,
+      };
+      vm.dialog = true;
+    },
     hoverColors(hover) {
       return {
         color: hover ? 'white' : 'inherit',

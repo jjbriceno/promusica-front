@@ -213,14 +213,14 @@
               <td>{{ item.id }}</td>
               <td>{{ item.title }}</td>
               <td>{{ item.author.full_name }}</td>
-              <td>
+              <td class="td">
                 <v-progress-linear
-                  :value="item.cuantity"
+                  :value="item.available"
                   height="12"
                   color="primary"
                   dark
                   rounded>
-                  {{ item.cuantity }}
+                  {{ item.available }}
                 </v-progress-linear>
               </td>
               <td>{{ item.gender.name }}</td>
@@ -229,7 +229,7 @@
                   item.location.drawer_name + ' ' + item.location.cabinet_name
                 }}
               </td>
-              <td>
+              <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -263,6 +263,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
+                      :disabled="item.available === 0"
                       fab
                       small
                       class="white--text"
@@ -308,44 +309,46 @@ export default {
       dateModal: false,
       dialog: false,
       loanDialog: false,
+      loanIndex: '',
+      loanCuantity: '',
       loan: {},
       headers: [
         {
           text: 'Id',
           value: 'id',
           filterable: false,
-          align: 'center',
+          align: 'left',
         },
         {
           text: 'Título',
           value: 'title',
-          align: 'center',
+          align: 'left',
         },
         {
           text: 'Autor',
-          value: 'author',
-          align: 'center',
+          value: 'author.full_name',
+          align: 'left',
         },
         {
           text: 'Cantidad',
-          value: 'cuantity',
+          value: 'available',
           filterable: false,
           align: 'center',
         },
         {
           text: 'Género',
-          value: 'gender',
+          value: 'gender.name',
           filterable: false,
-          align: 'center',
+          align: 'left',
         },
         {
           text: 'Ubicación',
-          value: 'location',
+          value: 'location.drawer_name',
           filterable: false,
-          align: 'center',
+          align: 'left',
         },
         {
-          text: 'Acciones',
+          text: '',
           value: 'actions',
           sortable: false,
           align: 'center',
@@ -509,6 +512,7 @@ export default {
     startLoan(item) {
       const vm = this;
       vm.loanDialog = !vm.loanDialog;
+      vm.loanIndex = vm.musicSheets.indexOf(item);
       vm.loan = {
         id: item.id,
         title: item.title,
@@ -517,8 +521,26 @@ export default {
         locationId: item.location.id,
         drawerId: parseInt(item.location.drawer_id),
         cabinetId: parseInt(item.location.cabinet_id),
-        maxCuantity: item.cuantity,
+        cuantity: vm.loanCuantity,
+        maxCuantity: item.available,
       };
+    },
+
+    async saveLoan() {
+      try {
+        const vm = this;
+        let response = await axios.post('api/loan/store', { ...vm.loan });
+        vm.loanCuantity = vm.loan.cuantity;
+        vm.musicSheets[vm.loanIndex].available -= vm.loanCuantity;
+
+        let updateResponse = await axios.post(`api/music-sheets/update`, {
+          id: vm.loan.id,
+          cuantity: vm.loan.cuantity,
+        });
+
+        vm.$refs.loanForm.reset();
+        console.log(vm.loanCuantity);
+      } catch (error) {}
     },
 
     resetLoan() {
@@ -527,23 +549,19 @@ export default {
       vm.loanDialog = !vm.loanDialog;
     },
 
-    async saveLoan() {
-      const vm = this;
-      let response = await axios.post('api/loan/store', { ...vm.loan });
-      vm.$refs.loanForm.reset();
-      console.log(response.data);
-    },
-
     setDate(date) {
       const vm = this;
       vm.loan.deliveryDate = date;
     },
   },
+  mounted() {
+    document.title = 'Partituras';
+  },
 };
 </script>
 
 <style lang="scss">
-td {
+.td {
   text-align: center !important;
 }
 // .on-hover-bg {
