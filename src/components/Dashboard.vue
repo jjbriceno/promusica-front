@@ -140,6 +140,7 @@
                 min="1"
                 :max="loan.maxCuantity"
                 outlined></v-text-field>
+              <DatePicker @selectedDate="setDate"></DatePicker>
               <v-text-field
                 v-model="loan.title"
                 placeholder="Título"
@@ -284,9 +285,12 @@
 </template>
 
 <script>
-import axios from 'axios';
+import DatePicker from './DatePicker.vue';
 
 export default {
+  components: {
+    DatePicker,
+  },
   data() {
     return {
       form: {},
@@ -301,6 +305,7 @@ export default {
       cabinets: '',
       borrowers: '',
       search: '',
+      dateModal: false,
       dialog: false,
       loanDialog: false,
       loan: {},
@@ -527,6 +532,11 @@ export default {
       let response = await axios.post('api/loan/store', { ...vm.loan });
       vm.$refs.loanForm.reset();
       console.log(response.data);
+    },
+
+    setDate(date) {
+      const vm = this;
+      vm.loan.deliveryDate = date;
     },
   },
 };
