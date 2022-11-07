@@ -1,94 +1,311 @@
 <template>
-    <v-container>
-        <v-card class="rounded-xl">
-            <v-card-title
-                primary-title
-                class="font-weight-black primary--text text-subtitle-1 text-uppercase"
+  <v-container>
+    <v-card>
+      <v-card-title
+        primary-title
+        class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+        Préstamos
+        <v-spacer></v-spacer>
+      </v-card-title>
+      <v-card-subtitle> Lista de préstamos </v-card-subtitle>
+      <hr style="color: #4527a0" />
+      <v-card-title>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Buscar"
+          single-line
+          hide-details></v-text-field>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="loans"
+        sort-by="id"
+        loading="true"
+        :search="search">
+        <template v-slot:item="{ item }">
+          <v-hover v-slot="{ hover }">
+            <tr class="on-hover-bg" :style="hoverColors(hover)">
+              <td>{{ item.id }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.loans.length }}</td>
+              <td>{{ item.total_music_sheets }}</td>
+              <td>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text mr-1"
+                      color="primary"
+                      v-on="on"
+                      v-bind="attrs">
+                      <v-icon> mdi-pencil </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Editar préstamo(s)</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text mr-1"
+                      color="red"
+                      v-on="on"
+                      @click="comfirmDelete(item)"
+                      v-bind="attrs">
+                      <v-icon> mdi-delete </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Eliminar préstamo(s)</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      fab
+                      small
+                      class="white--text mr-1"
+                      color="cyan"
+                      v-on="on"
+                      @click="viewLoanDetails(item)"
+                      v-bind="attrs">
+                      <v-icon> mdi-eye </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Detalles</span>
+                </v-tooltip>
+              </td>
+            </tr>
+          </v-hover>
+        </template>
+      </v-data-table>
+
+      <v-dialog v-model="dialogDelete" max-width="460px">
+        <v-card>
+          <v-card-title class="text-h5"
+            >¿Está seguro de eliminar el préstamo?</v-card-title
+          >
+          <v-card-text class="text-justify">
+            Eliminar este prestamo reintegra las partituras y estarán
+            disponibles para realizar nuevos prestamos. Asegúrese de tener estas
+            partituras antes de eliminar este préstamo.
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark @click="deleteItem(itemToDelete)"
+              >Aceptar</v-btn
             >
-                Préstamos
-                <v-spacer></v-spacer>
-                <v-btn color="success" fab small @click="dialog = !dialog">
-                    <v-icon large>mdi-plus</v-icon>
-                </v-btn>
-            </v-card-title>
-            <v-card-subtitle> Realizar un préstamo </v-card-subtitle>
-            <hr style="color: #4527a0" />
-            <v-card-text>
-                <v-form v-model="valid">
-                    <v-container>
-                        <h4>Prestado a:</h4>
-                        <v-row>
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    v-model="firstname"
-                                    :rules="nameRules"
-                                    :counter="10"
-                                    label="Nombre"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    v-model="lastname"
-                                    :rules="nameRules"
-                                    :counter="10"
-                                    label="Apellido"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    v-model="email"
-                                    :rules="emailRules"
-                                    label="E-mail"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    v-model="email"
-                                    :rules="emailRules"
-                                    label="Dirección"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    v-model="email"
-                                    :rules="emailRules"
-                                    label="Télefono"
-                                    required
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                        <h4>Partitura:</h4>
-                        <v-row>
-                            <v-col cols="12" md="4">
-                                <v-select
-                                    :items="music_sheet"
-                                    v-model="music_sheet_id"
-                                    label="Seleccione..."
-                                ></v-select>
-                            </v-col>
-                            <v-col cols="12" md="4">
-                                <v-text-field
-                                    name="cuantity"
-                                    label="Cantidad"
-                                    id="id"
-                                ></v-text-field>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-form>
-            </v-card-text>
+            <v-spacer></v-spacer>
+            <v-btn color="red" dark @click="cancelItemDelete">Cancel</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
         </v-card>
-    </v-container>
+      </v-dialog>
+
+      <v-dialog
+        @click:outside="cancel"
+        @keydown.esc="cancel"
+        v-model="viewDetailsDialog"
+        :overlay="false"
+        max-width="1000px"
+        transition="dialog-transition">
+        <v-card class="">
+          <v-toolbar dark color="#4527a0">
+            <v-toolbar-title>{{ borrowerName }}</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text class="pt-8">
+            <v-data-table
+              :headers="dialogHeaders"
+              :items="borrowerLoans"
+              class="elevation-1">
+              <template slot="items" slot-scope="props">
+                <td>{{ props.item.key }}</td>
+                <td>{{ props.item.key }}</td>
+                <td>{{ props.item.key }}</td>
+                <td>{{ props.item.key }}</td>
+                <td>{{ props.item.key }}</td>
+              </template>
+            </v-data-table>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn class="mt-2" dark color="error" @click="cancel"
+                >Cerrar</v-btn
+              >
+            </v-card-actions>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-export default {};
+export default {
+  data: () => ({
+    search: '',
+    dialog: false,
+    dialogDelete: false,
+    deleteIndex: '',
+    editIndex: '',
+    itemToDelete: '',
+    borrowerName: '',
+    viewDetailsDialog: false,
+    headers: [
+      {
+        text: 'Id',
+        value: 'id',
+        filterable: false,
+      },
+      {
+        text: 'Prestatario',
+        value: 'name',
+      },
+      {
+        text: 'Prestamos activos',
+        value: 'loans',
+      },
+      {
+        text: 'N° de partituras',
+        value: 'total_music_sheets',
+      },
+      {
+        text: '',
+        value: 'actions',
+        sortable: false,
+      },
+    ],
+
+    dialogHeaders: [
+      {
+        text: 'Id',
+        value: 'id',
+        filterable: false,
+      },
+      {
+        text: 'Título',
+        value: 'loan_info.title',
+      },
+      {
+        text: 'Autor',
+        value: 'loan_info.author',
+      },
+      {
+        text: 'Fecha de préstamo',
+        value: 'loan_date',
+      },
+      {
+        text: 'Fecha de entrega',
+        value: 'delivery_date',
+      },
+      {
+        text: 'N° de partituras',
+        value: 'cuantity',
+      },
+      {
+        text: 'Acciones',
+        value: 'actions',
+        sortable: false,
+      },
+    ],
+    loans: [],
+    borrowerLoans: [],
+  }),
+
+  methods: {
+    /**
+     *
+     * @param {*} item
+     */
+    viewLoanDetails(item) {
+      const vm = this;
+      vm.viewDetailsDialog = !vm.viewDetailsDialog;
+      vm.borrowerName = item.name;
+      vm.borrowerLoans = item.loans;
+    },
+
+    /**
+     *
+     */
+    cancel() {
+      const vm = this;
+      vm.viewDetailsDialog = !vm.viewDetailsDialog;
+    },
+
+    /**
+     *
+     * @param {*} item
+     */
+    comfirmDelete(item) {
+      const vm = this;
+      vm.itemToDelete = Object.assign({}, item);
+      vm.deleteIndex = vm.loans.findIndex((obj) => obj.id === item.id);
+      vm.dialogDelete = !vm.dialogDelete;
+    },
+
+    /**
+     *
+     */
+    cancelItemDelete() {
+      const vm = this;
+      vm.itemToDelete = Object.assign({}, {});
+      vm.deleteIndex = '';
+      vm.dialogDelete = !vm.dialogDelete;
+    },
+
+    /**
+     *
+     * @param {*} item
+     */
+    async deleteItem(item) {
+      const vm = this;
+
+      try {
+        let response = await axios.post(`api/loan/destroy/${item.id}`);
+        vm.$nextTick(() => {
+          vm.loans.splice(vm.deleteIndex, 1);
+          vm.loans = response.data.loans;
+        });
+        vm.dialogDelete = false;
+      } catch (error) {}
+    },
+
+    /**
+     *
+     */
+    async getLoans() {
+      try {
+        const vm = this;
+        let response = await axios.get('api/loan');
+        vm.loans = response.data.loans;
+        console.log(vm.loans);
+      } catch (error) {}
+    },
+
+    /**
+     *
+     * @param {*} hover
+     */
+    hoverColors(hover) {
+      return {
+        color: hover ? 'white' : 'inherit',
+        background: hover ? '#4527A0' : 'inherit',
+      };
+    },
+  },
+  async created() {
+    const vm = this;
+    await vm.getLoans();
+  },
+
+  mounted() {
+    document.title = 'Préstamos'
+  }
+};
 </script>
 
-<style></style>
+<style>
+/* .td {
+  text-align: left !important;
+} */
+</style>

@@ -55,7 +55,7 @@ export default {
         { text: 'Autores', icon: 'mdi-lead-pencil', to: '/authors' },
         { text: 'Géneros Musicales', icon: 'mdi-folder', to: '/genders' },
         { text: 'Prestatarios', icon: 'mdi-account-clock', to: '/borrowers' },
-        { text: 'Prestamos', icon: 'mdi-timetable', to: '/loans' },
+        { text: 'Préstamos', icon: 'mdi-timetable', to: '/loans' },
       ],
     };
   },

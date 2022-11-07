@@ -208,8 +208,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data: () => ({
     search: '',
@@ -219,6 +217,7 @@ export default {
     dialogDelete: false,
     deleteIndex: '',
     editIndex: '',
+    itemToDelete: '',
     headers: [
       {
         text: 'Id',
@@ -353,6 +352,18 @@ export default {
       vm.itemToDelete = Object.assign({}, {});
       vm.deleteIndex = '';
       vm.dialogDelete = !vm.dialogDelete;
+    },
+
+    async deleteItem(item) {
+      const vm = this;
+
+      try {
+        await axios.post(`api/borrowers/destroy/${item.id}`);
+        vm.$nextTick(() => {
+          vm.borrowers.splice(vm.deleteIndex, 1);
+        });
+        vm.dialogDelete = false;
+      } catch (error) {}
     },
   },
 

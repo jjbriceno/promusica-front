@@ -103,7 +103,7 @@
           <v-card-title class="text-h5"
             >¿Está seguro de eliminar el autor?</v-card-title
           >
-          <v-card-text>
+          <v-card-text class="text-justify">
             Eliminar este autor tambien produce la eliminación de los titulos
             asociados al autor.
           </v-card-text>
@@ -147,7 +147,7 @@ export default {
           align: 'center',
         },
         {
-          text: 'Acciones',
+          text: '',
           value: 'actions',
           sortable: false,
           filterable: false,
@@ -244,8 +244,8 @@ export default {
     },
   },
   mounted() {
-    document.title = "Autores";
-  }
+    document.title = 'Autores';
+  },
 };
 </script>
 

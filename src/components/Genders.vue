@@ -71,8 +71,8 @@
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td>{{ item.id }}</td>
-              <td>{{ item.name }}</td>
+              <td class="td">{{ item.id }}</td>
+              <td class="td">{{ item.name }}</td>
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
@@ -102,8 +102,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return {
@@ -127,7 +125,7 @@ export default {
           align: 'center',
         },
         {
-          text: 'Acciones',
+          text: '',
           value: 'actions',
           sortable: false,
           align: 'center',
@@ -199,7 +197,7 @@ export default {
 </script>
 
 <style>
-td {
+.td {
   text-align: center !important;
 }
 </style>

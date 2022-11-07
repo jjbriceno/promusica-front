@@ -253,6 +253,7 @@
                       class="white--text mr-1"
                       color="red"
                       @click="comfirmDelete(item)"
+                      :disabled="item.available === 0"
                       v-on="on"
                       v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
@@ -539,6 +540,7 @@ export default {
         });
 
         vm.$refs.loanForm.reset();
+        vm.loanDialog = !vm.loanDialog;
         console.log(vm.loanCuantity);
       } catch (error) {}
     },
