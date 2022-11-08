@@ -8,11 +8,14 @@
             bottom
             color="success"
             dot
-            offset-x="10"
+            offset-x="8"
             offset-y="10">
-            <v-avatar size="40">
-              <v-img
-                src="https://d1r8m46oob3o9u.cloudfront.net/images/home-page-examples/01.jpg"></v-img>
+            <v-avatar size="40" color="#CE93D8">
+              <!-- <v-img
+                src="https://d1r8m46oob3o9u.cloudfront.net/images/home-page-examples/01.jpg"></v-img> -->
+              <span class="white--text headline">{{
+                $store.state.user.name[0] + $store.state.user.name[1]
+              }}</span>
             </v-avatar>
           </v-badge>
           <v-list-item-content>

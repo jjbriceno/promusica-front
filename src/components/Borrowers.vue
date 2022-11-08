@@ -15,6 +15,7 @@
             <v-row>
               <v-col cols="12" md="4">
                 <v-text-field
+                  maxlength="10"
                   outlined
                   v-model="form.firstName"
                   :counter="10"
@@ -24,6 +25,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-text-field
+                  maxlength="10"
                   outlined
                   v-model="form.lastName"
                   :counter="10"
@@ -41,6 +43,7 @@
               </v-col>
               <v-col cols="12" md="4">
                 <v-text-field
+                  maxlength="11"
                   outlined
                   v-model="form.phone"
                   label="Télefono"
@@ -373,7 +376,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .td {
   text-align: center !important;
 }

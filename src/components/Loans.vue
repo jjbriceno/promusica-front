@@ -30,21 +30,7 @@
               <td>{{ item.name }}</td>
               <td>{{ item.loans.length }}</td>
               <td>{{ item.total_music_sheets }}</td>
-              <td>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      class="white--text mr-1"
-                      color="primary"
-                      v-on="on"
-                      v-bind="attrs">
-                      <v-icon> mdi-pencil </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Editar préstamo(s)</span>
-                </v-tooltip>
+              <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -103,6 +89,21 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="confirmReturnDialog" max-width="300px">
+        <v-card>
+          <v-card-title class="text-h5">¿Retonar partitura(s)?</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" dark @click="confirmReturnLoan"
+              >Aceptar</v-btn
+            >
+            <v-spacer></v-spacer>
+            <v-btn color="red" dark @click="cancelReturn">Cancel</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-dialog
         @click:outside="cancel"
         @keydown.esc="cancel"
@@ -118,13 +119,52 @@
             <v-data-table
               :headers="dialogHeaders"
               :items="borrowerLoans"
-              class="elevation-1">
-              <template slot="items" slot-scope="props">
-                <td>{{ props.item.key }}</td>
-                <td>{{ props.item.key }}</td>
-                <td>{{ props.item.key }}</td>
-                <td>{{ props.item.key }}</td>
-                <td>{{ props.item.key }}</td>
+              sort-by="id"
+              loading="true"
+              :search="search">
+              <template v-slot:item="{ item }">
+                <v-hover v-slot="{ hover }">
+                  <tr class="on-hover-bg" :style="hoverColors(hover)">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.loan_info.author }}</td>
+                    <td>{{ item.loan_info.title }}</td>
+                    <td>{{ item.loan_date }}</td>
+                    <td>{{ item.delivery_date }}</td>
+                    <td>{{ item.cuantity }}</td>
+                    <td class="td">
+                      <!-- <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            icon
+                            small
+                            class="white--text mr-1"
+                            color="primary"
+                            @click="editItem(item)"
+                            v-on="on"
+                            v-bind="attrs">
+                            <v-icon> mdi-pencil </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Editar partitura</span>
+                      </v-tooltip> -->
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            @click="returnLoan(item)"
+                            icon
+                            small
+                            class="white--text mr-1"
+                            color="green"
+                            v-on="on"
+                            v-bind="attrs">
+                            <v-icon> mdi-inbox-arrow-down </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Entregar partituras</span>
+                      </v-tooltip>
+                    </td>
+                  </tr>
+                </v-hover>
               </template>
             </v-data-table>
             <v-card-actions>
@@ -141,6 +181,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data: () => ({
     search: '',
@@ -151,6 +193,8 @@ export default {
     itemToDelete: '',
     borrowerName: '',
     viewDetailsDialog: false,
+    confirmReturnDialog: false,
+    returningLoan: {},
     headers: [
       {
         text: 'Id',
@@ -206,6 +250,7 @@ export default {
         text: 'Acciones',
         value: 'actions',
         sortable: false,
+        align: 'center',
       },
     ],
     loans: [],
@@ -215,6 +260,53 @@ export default {
   methods: {
     /**
      *
+     */
+    async confirmReturnLoan() {
+      try {
+        const vm = this;
+        let response = await axios.post('api/loan/return', {
+          ...vm.returningLoan,
+        });
+        vm.$nextTick(() => {
+          vm.borrowerLoans = response.data.loans;
+          vm.loans = response.data.borrowers;
+          console.log(vm.borrowerLoans, vm.loans);
+        });
+        vm.confirmReturnDialog = !vm.confirmReturnDialog;
+      } catch (error) {}
+    },
+    /**
+     *
+     */
+    cancelReturn() {
+      const vm = this;
+      vm.confirmReturnDialog = !vm.confirmReturnDialog;
+      vm.returningLoan = Object.assign({}, {});
+    },
+    /**
+     *
+     */
+    returnLoan(item) {
+      const vm = this;
+
+      vm.confirmReturnDialog = !vm.confirmReturnDialog;
+
+      let key = JSON.parse(item.music_sheets_borrowed_amount);
+
+      console.log(key);
+
+      let musicSheetId = Object.keys(key)[0];
+
+      vm.returningLoan = {
+        musicSheetId: musicSheetId,
+        loanId: item.id,
+        cuantity: item.cuantity,
+      };
+
+      console.log(musicSheetId[0], item.id, vm.borrowerId);
+    },
+    /**
+     *
      * @param {*} item
      */
     viewLoanDetails(item) {
@@ -222,6 +314,8 @@ export default {
       vm.viewDetailsDialog = !vm.viewDetailsDialog;
       vm.borrowerName = item.name;
       vm.borrowerLoans = item.loans;
+      vm.borrowerId = item.id;
+      console.log('borrower_id', vm.borrowerId);
     },
 
     /**
@@ -299,13 +393,13 @@ export default {
   },
 
   mounted() {
-    document.title = 'Préstamos'
-  }
+    document.title = 'Préstamos';
+  },
 };
 </script>
 
-<style>
-/* .td {
-  text-align: left !important;
-} */
+<style scoped>
+.td {
+  text-align: center !important;
+}
 </style>

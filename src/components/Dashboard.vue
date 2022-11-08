@@ -52,30 +52,31 @@
                 outlined
                 label="Autor"
                 :items="authors"></v-autocomplete>
-              <v-select
+              <v-autocomplete
                 :items="genders"
                 item-text="name"
                 item-value="id"
                 v-model="form.genderId"
                 label="Géneros"
-                outlined></v-select>
+                outlined></v-autocomplete>
               <!-- Location -->
               <!-- Estante -->
-              <v-select
+              <v-autocomplete
+                offset-y
                 :items="drawers"
                 item-text="name"
                 item-value="id"
                 v-model="form.drawerId"
                 label="Estante"
-                outlined></v-select>
+                outlined></v-autocomplete>
               <!-- Gaveta -->
-              <v-select
+              <v-autocomplete
                 :items="cabinets"
                 item-text="name"
                 item-value="id"
                 v-model="form.cabinetId"
                 label="Gaveta"
-                outlined></v-select>
+                outlined></v-autocomplete>
               <v-text-field
                 v-model.number="form.cuantity"
                 placeholder="Cantidad"
@@ -209,10 +210,10 @@
         :search="search">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
-            <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td>{{ item.id }}</td>
-              <td>{{ item.title }}</td>
-              <td>{{ item.author.full_name }}</td>
+            <tr class="on-hover-bg td" :style="hoverColors(hover)">
+              <td class="td">{{ item.id }}</td>
+              <td class="td">{{ item.title }}</td>
+              <td class="td">{{ item.author.full_name }}</td>
               <td class="td">
                 <v-progress-linear
                   :value="item.available"
@@ -223,13 +224,13 @@
                   {{ item.available }}
                 </v-progress-linear>
               </td>
-              <td>{{ item.gender.name }}</td>
-              <td>
+              <td class="td">{{ item.gender.name }}</td>
+              <td class="td">
                 {{
                   item.location.drawer_name + ' ' + item.location.cabinet_name
                 }}
               </td>
-              <td class="td">
+              <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -318,41 +319,34 @@ export default {
           text: 'Id',
           value: 'id',
           filterable: false,
-          align: 'left',
         },
         {
           text: 'Título',
           value: 'title',
-          align: 'left',
         },
         {
           text: 'Autor',
           value: 'author.full_name',
-          align: 'left',
         },
         {
           text: 'Cantidad',
           value: 'available',
           filterable: false,
-          align: 'center',
         },
         {
           text: 'Género',
           value: 'gender.name',
           filterable: false,
-          align: 'left',
         },
         {
           text: 'Ubicación',
           value: 'location.drawer_name',
           filterable: false,
-          align: 'left',
         },
         {
           text: '',
           value: 'actions',
           sortable: false,
-          align: 'center',
         },
       ],
       musicSheets: [],
@@ -562,9 +556,9 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .td {
-  text-align: center !important;
+  text-align: left !important;
 }
 // .on-hover-bg {
 //     display: table-row;

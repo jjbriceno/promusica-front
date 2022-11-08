@@ -7,7 +7,7 @@
       </v-app-bar-nav-icon>
       <v-app-bar-title class="font-weight-black">
         <div>Fundación Promúsica</div>
-        <h5>Coro de niños y jovenes de la Universidad de los Andes</h5>
+        <h5>Coro de Niños y Jovenes de la Universidad de los Andes</h5>
       </v-app-bar-title>
       <v-spacer></v-spacer>
       <UserMenu v-if="$store.state.auth" />

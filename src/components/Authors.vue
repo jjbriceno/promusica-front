@@ -60,9 +60,9 @@
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td>{{ item.id }}</td>
-              <td>{{ item.full_name }}</td>
-              <td>
+              <td class="td">{{ item.id }}</td>
+              <td class="td">{{ item.full_name }}</td>
+              <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -192,7 +192,6 @@ export default {
 
     editItem(item) {
       const vm = this;
-      console.log(item);
       vm.editIndex = vm.authors.findIndex((obj) => obj.id === item.id);
 
       vm.isEdit = true;
@@ -249,8 +248,8 @@ export default {
 };
 </script>
 
-<style>
-td {
+<style scoped>
+.td {
   text-align: center !important;
 }
 </style>

@@ -20,10 +20,12 @@
                 prepend-icon="mdi-account"
                 name="email"
                 label="Email"
+                :rules="[rules.required, rules.email]"
                 id="email"
                 type="text"
                 v-model="form.email"></v-text-field>
               <v-text-field
+                maxlength="8"
                 placeholder="Contraseña"
                 outlined
                 prepend-icon="mdi-lock"
@@ -34,6 +36,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword"
                 counter
+                :error-messages="errors"
                 v-model="form.password"
                 :append-icon="
                   showPassword ? 'mdi-eye' : 'mdi-eye-off'
@@ -58,15 +61,30 @@ export default {
   data: () => ({
     showPassword: false,
     form: {
-      email: 'ppollich@example.net',
-      password: 'password',
+      email: '',
+      password: '',
     },
+    rules: {
+      required: (value) => !!value || 'Requerido',
+      counter: (value) => value.length <= 20 || 'Max 20 characters',
+      email: (value) => {
+        const pattern =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return pattern.test(value) || 'E-mail inválido';
+      },
+    },
+    errors: '',
   }),
   methods: {
     async login() {
       const vm = this;
-      await vm.$store.dispatch('login', this.form);
-      vm.$router.push('dashboard');
+      try {
+        await vm.$store.dispatch('login', this.form);
+        vm.$router.push('dashboard');
+      } catch (error) {
+        vm.errors = error.response.data.errors.email[0];
+        console.log(error.response.status, error.response.data.errors);
+      }
     },
   },
 };

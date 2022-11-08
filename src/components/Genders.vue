@@ -145,9 +145,11 @@ export default {
   methods: {
     async getGenders() {
       const vm = this;
-      let response = await axios.get('api/genders');
-      vm.genders = response.data.genders;
-      console.log(response.data);
+      try {
+        let response = await axios.get('api/genders');
+        vm.genders = response.data.genders;
+        console.log(response.data);
+      } catch (error) {}
     },
     addNew() {
       const vm = this;
@@ -196,7 +198,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .td {
   text-align: center !important;
 }
