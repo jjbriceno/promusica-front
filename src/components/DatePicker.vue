@@ -24,10 +24,11 @@
           v-model="date"
           no-title
           @input="menu = false">
-          <v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
+          <!-- <v-btn text color="primary" @click="menu = false">Cancelar</v-btn>
           <v-btn text color="primary" @click="$refs.menu.save(date)"
             >Aceptar
-          </v-btn></v-date-picker
+          </v-btn> -->
+          </v-date-picker
         >
       </v-menu>
     </v-row>

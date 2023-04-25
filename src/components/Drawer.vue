@@ -5,7 +5,7 @@
       <v-list-item>
         <v-list-item-avatar size="200">
           <v-img
-            src="https://d1r8m46oob3o9u.cloudfront.net/images/home-page-examples/01.jpg"
+            src="../assets/promusica.jpg"
             alt="user picture"></v-img>
         </v-list-item-avatar>
       </v-list-item>
