@@ -126,8 +126,8 @@
                 <v-hover v-slot="{ hover }">
                   <tr class="on-hover-bg" :style="hoverColors(hover)">
                     <td>{{ item.id }}</td>
-                    <td>{{ item.loan_info.author }}</td>
                     <td>{{ item.loan_info.title }}</td>
+                    <td>{{ item.loan_info.author }}</td>
                     <td>{{ item.loan_date }}</td>
                     <td>{{ item.delivery_date }}</td>
                     <td>{{ item.cuantity }}</td>
