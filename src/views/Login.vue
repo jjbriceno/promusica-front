@@ -14,33 +14,13 @@
               </v-row>
             </v-toolbar>
             <v-card-text class="mt-6">
-              <v-text-field
-                placeholder="Email"
-                outlined
-                prepend-icon="mdi-account"
-                name="email"
-                label="Email"
-                :rules="[rules.required, rules.email]"
-                id="email"
-                type="text"
-                v-model="form.email"></v-text-field>
-              <v-text-field
-                maxlength="8"
-                placeholder="Contraseña"
-                outlined
-                prepend-icon="mdi-lock"
-                name="password"
-                label="Contraseña"
-                id="password"
-                hint="La contraseña debe contener al menos 8 caracteres"
-                :type="showPassword ? 'text' : 'password'"
-                @click:append="showPassword = !showPassword"
-                counter
-                :error-messages="errors"
-                v-model="form.password"
-                :append-icon="
-                  showPassword ? 'mdi-eye' : 'mdi-eye-off'
-                "></v-text-field>
+              <v-text-field placeholder="Email" outlined prepend-icon="mdi-account" name="email" label="Email"
+                :rules="[rules.required, rules.email]" id="email" type="text" v-model="form.email"></v-text-field>
+              <v-text-field maxlength="8" placeholder="Contraseña" outlined prepend-icon="mdi-lock" name="password"
+                label="Contraseña" id="password" hint="La contraseña debe contener al menos 8 caracteres"
+                :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword" counter
+                :error-messages="errors" v-model="form.password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'
+                  "></v-text-field>
             </v-card-text>
             <v-card-actions fill-height>
               <v-row class="pb-4">

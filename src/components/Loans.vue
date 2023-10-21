@@ -1,28 +1,16 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title
-        primary-title
-        class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
         Préstamos
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-subtitle> Lista de préstamos </v-card-subtitle>
       <hr style="color: #4527a0" />
       <v-card-title>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Buscar"
-          single-line
-          hide-details></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table
-        :headers="headers"
-        :items="loans"
-        sort-by="id"
-        loading="true"
-        :search="search">
+      <v-data-table :headers="headers" :items="loans" sort-by="id" loading="true" :search="search">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -33,13 +21,7 @@
               <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      class="white--text mr-1"
-                      color="red"
-                      v-on="on"
-                      @click="comfirmDelete(item)"
+                    <v-btn fab small class="white--text mr-1" color="red" v-on="on" @click="comfirmDelete(item)"
                       v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
                     </v-btn>
@@ -48,13 +30,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      class="white--text mr-1"
-                      color="cyan"
-                      v-on="on"
-                      @click="viewLoanDetails(item)"
+                    <v-btn fab small class="white--text mr-1" color="cyan" v-on="on" @click="viewLoanDetails(item)"
                       v-bind="attrs">
                       <v-icon> mdi-eye </v-icon>
                     </v-btn>
@@ -69,9 +45,7 @@
 
       <v-dialog v-model="dialogDelete" max-width="460px">
         <v-card>
-          <v-card-title class="text-h5"
-            >¿Está seguro de eliminar el préstamo?</v-card-title
-          >
+          <v-card-title class="text-h5">¿Está seguro de eliminar el préstamo?</v-card-title>
           <v-card-text class="text-justify">
             Eliminar este prestamo reintegra las partituras y estarán
             disponibles para realizar nuevos prestamos. Asegúrese de tener estas
@@ -79,9 +53,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark @click="deleteItem(itemToDelete)"
-              >Aceptar</v-btn
-            >
+            <v-btn color="primary" dark @click="deleteItem(itemToDelete)">Aceptar</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="red" dark @click="cancelItemDelete">Cancel</v-btn>
             <v-spacer></v-spacer>
@@ -94,9 +66,7 @@
           <v-card-title class="text-h5">¿Retonar partitura(s)?</v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark @click="confirmReturnLoan"
-              >Aceptar</v-btn
-            >
+            <v-btn color="primary" dark @click="confirmReturnLoan">Aceptar</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="red" dark @click="cancelReturn">Cancel</v-btn>
             <v-spacer></v-spacer>
@@ -104,24 +74,14 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog
-        @click:outside="cancel"
-        @keydown.esc="cancel"
-        v-model="viewDetailsDialog"
-        :overlay="false"
-        max-width="1000px"
-        transition="dialog-transition">
+      <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="viewDetailsDialog" :overlay="false"
+        max-width="1000px" transition="dialog-transition">
         <v-card class="">
           <v-toolbar dark color="#4527a0">
             <v-toolbar-title>{{ borrowerName }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
-            <v-data-table
-              :headers="dialogHeaders"
-              :items="borrowerLoans"
-              sort-by="id"
-              loading="true"
-              :search="search">
+            <v-data-table :headers="dialogHeaders" :items="borrowerLoans" sort-by="id" loading="true" :search="search">
               <template v-slot:item="{ item }">
                 <v-hover v-slot="{ hover }">
                   <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -149,13 +109,7 @@
                       </v-tooltip> -->
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                            @click="returnLoan(item)"
-                            icon
-                            small
-                            class="white--text mr-1"
-                            color="green"
-                            v-on="on"
+                          <v-btn @click="returnLoan(item)" icon small class="white--text mr-1" color="green" v-on="on"
                             v-bind="attrs">
                             <v-icon> mdi-inbox-arrow-down </v-icon>
                           </v-btn>
@@ -169,9 +123,7 @@
             </v-data-table>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn class="mt-2" dark color="error" @click="cancel"
-                >Cerrar</v-btn
-              >
+              <v-btn class="mt-2" dark color="error" @click="cancel">Cerrar</v-btn>
             </v-card-actions>
           </v-card-text>
         </v-card>
@@ -273,7 +225,7 @@ export default {
           console.log(vm.borrowerLoans, vm.loans);
         });
         vm.confirmReturnDialog = !vm.confirmReturnDialog;
-      } catch (error) {}
+      } catch (error) { }
     },
     /**
      *
@@ -361,7 +313,7 @@ export default {
           vm.loans = response.data.loans;
         });
         vm.dialogDelete = false;
-      } catch (error) {}
+      } catch (error) { }
     },
 
     /**
@@ -373,7 +325,7 @@ export default {
         let response = await axios.get('api/loan');
         vm.loans = response.data.loans;
         console.log(vm.loans);
-      } catch (error) {}
+      } catch (error) { }
     },
 
     /**

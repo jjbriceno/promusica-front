@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
 
-
 Vue.use(VueRouter)
 
 const routes = [
@@ -13,27 +12,27 @@ const routes = [
   },
   {
     path: '/dashboard',
-    component: () => import(/* webpackChunkName: "login" */ '../components/Dashboard.vue'),
+    component: () => import(/* webpackChunkName: "dashboard" */ '../components/Dashboard.vue'),
     name: 'Dashboard'
   },
   {
     path: '/authors',
-    component: () => import(/* webpackChunkName: "login" */ '../components/Authors.vue'),
+    component: () => import(/* webpackChunkName: "authors" */ '../components/Authors.vue'),
     name: 'Authors'
   },
   {
     path: '/genders',
-    component: () => import(/* webpackChunkName: "login" */ '../components/Genders.vue'),
+    component: () => import(/* webpackChunkName: "genders" */ '../components/Genders.vue'),
     name: 'Genders'
   },
   {
     path: '/loans',
-    component: () => import(/* webpackChunkName: "login" */ '../components/Loans.vue'),
+    component: () => import(/* webpackChunkName: "loans" */ '../components/Loans.vue'),
     name: 'Loans'
   },
   {
     path: '/borrowers',
-    component: () => import(/* webpackChunkName: "login" */ '../components/Borrowers.vue'),
+    component: () => import(/* webpackChunkName: "borrowers" */ '../components/Borrowers.vue'),
     name: 'Borrowers'
   },
 ]

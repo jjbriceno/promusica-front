@@ -1,9 +1,7 @@
 <template>
   <v-container>
     <v-card elevation="8" class="">
-      <v-card-title
-        primary-title
-        class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
         Autores
         <v-spacer></v-spacer>
         <v-btn color="success" fab small @click="addNew">
@@ -12,12 +10,7 @@
       </v-card-title>
       <v-card-subtitle> Lista de autores </v-card-subtitle>
       <hr style="color: #4527a0" />
-      <v-dialog
-        @click:outside="cancel"
-        @keydown.esc="cancel"
-        v-model="dialog"
-        :overlay="false"
-        max-width="700px"
+      <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="dialog" :overlay="false" max-width="700px"
         transition="dialog-transition">
         <v-card class="">
           <v-toolbar dark color="#4527a0">
@@ -27,13 +20,8 @@
           </v-toolbar>
           <v-card-text class="pt-8">
             <v-form ref="form" @submit.prevent="save">
-              <v-text-field
-                v-model="form.fullName"
-                placeholder="Nombre completo"
-                name="name"
-                label="Nombre completo"
-                id="id"
-                outlined></v-text-field>
+              <v-text-field v-model="form.fullName" placeholder="Nombre completo" name="name" label="Nombre completo"
+                id="id" outlined></v-text-field>
               <v-card-actions>
                 <v-btn type="submit" color="primary">Guardar</v-btn>
                 <v-spacer></v-spacer>
@@ -44,19 +32,9 @@
         </v-card>
       </v-dialog>
       <v-card-title>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Buscar"
-          single-line
-          hide-details></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table
-        :headers="headers"
-        :items="authors"
-        sort-by="id"
-        loading="true"
-        :search="search">
+      <v-data-table :headers="headers" :items="authors" sort-by="id" loading="true" :search="search">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -65,13 +43,7 @@
               <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      class="white--text mr-1"
-                      color="primary"
-                      v-on="on"
-                      v-bind="attrs"
+                    <v-btn fab small class="white--text mr-1" color="primary" v-on="on" v-bind="attrs"
                       @click="editItem(item)">
                       <v-icon> mdi-pencil </v-icon>
                     </v-btn>
@@ -80,13 +52,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      @click="comfirmDelete(item)"
-                      fab
-                      small
-                      class="white--text"
-                      color="red"
-                      v-on="on"
+                    <v-btn @click="comfirmDelete(item)" fab small class="white--text" color="red" v-on="on"
                       v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
                     </v-btn>
@@ -100,18 +66,14 @@
       </v-data-table>
       <v-dialog v-model="dialogDelete" max-width="420px">
         <v-card>
-          <v-card-title class="text-h5"
-            >¿Está seguro de eliminar el autor?</v-card-title
-          >
+          <v-card-title class="text-h5">¿Está seguro de eliminar el autor?</v-card-title>
           <v-card-text class="text-justify">
             Eliminar este autor tambien produce la eliminación de los titulos
             asociados al autor.
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark @click="deleteItem(itemToDelete)"
-              >Aceptar</v-btn
-            >
+            <v-btn color="primary" dark @click="deleteItem(itemToDelete)">Aceptar</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="red" dark @click="cancelItemDelete">Cancel</v-btn>
             <v-spacer></v-spacer>
@@ -225,7 +187,7 @@ export default {
           vm.authors.splice(vm.deleteIndex, 1);
         });
         vm.dialogDelete = false;
-      } catch (error) {}
+      } catch (error) { }
     },
 
     cancelItemDelete() {

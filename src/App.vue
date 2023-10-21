@@ -41,10 +41,8 @@ export default {
 
 <style>
 .gradient {
-  background: linear-gradient(
-    180deg,
-    rgba(69, 39, 160, 1) 37%,
-    rgba(126, 87, 194, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(69, 39, 160, 1) 37%,
+      rgba(126, 87, 194, 1) 100%);
 }
 </style>

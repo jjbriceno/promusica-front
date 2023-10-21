@@ -1,20 +1,12 @@
 <template>
   <v-container>
     <v-card elevation="8" class="">
-      <v-card-title
-        primary-title
-        class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
         Géneros Musicales
         <v-spacer></v-spacer>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="success"
-              fab
-              small
-              @click="addNew"
-              v-bind="attrs"
-              v-on="on">
+            <v-btn color="success" fab small @click="addNew" v-bind="attrs" v-on="on">
               <v-icon large>mdi-plus</v-icon>
             </v-btn>
           </template>
@@ -23,11 +15,7 @@
       </v-card-title>
       <v-card-subtitle> Lista de géneros musicales </v-card-subtitle>
       <hr style="color: #4527a0" />
-      <v-dialog
-        v-model="dialog"
-        :overlay="false"
-        max-width="700px"
-        transition="dialog-transition">
+      <v-dialog v-model="dialog" :overlay="false" max-width="700px" transition="dialog-transition">
         <v-card class="">
           <v-toolbar dark color="#4527a0">
             <v-toolbar-title>{{
@@ -36,38 +24,21 @@
           </v-toolbar>
           <v-card-text class="pt-8">
             <v-form @submit.prevent="save" ref="form">
-              <v-text-field
-                v-model="form.genderName"
-                name="name"
-                label="Nombre"
-                placeholder="Nombre"
-                id="id"
+              <v-text-field v-model="form.genderName" name="name" label="Nombre" placeholder="Nombre" id="id"
                 outlined></v-text-field>
               <v-card-actions>
                 <v-btn type="submit" color="primary">Guardar</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn dark color="error" @click="dialog = !dialog"
-                  >Cancelar</v-btn
-                >
+                <v-btn dark color="error" @click="dialog = !dialog">Cancelar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
         </v-card>
       </v-dialog>
       <v-card-title>
-        <v-text-field
-          v-model="search"
-          append-icon="mdi-magnify"
-          label="Buscar"
-          single-line
-          hide-details></v-text-field>
+        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table
-        :headers="headers"
-        :items="genders"
-        sort-by="id"
-        loading="true"
-        :search="search">
+      <v-data-table :headers="headers" :items="genders" sort-by="id" loading="true" :search="search">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -76,13 +47,7 @@
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      fab
-                      small
-                      class="white--text mr-1"
-                      color="primary"
-                      v-on="on"
-                      v-bind="attrs"
+                    <v-btn fab small class="white--text mr-1" color="primary" v-on="on" v-bind="attrs"
                       @click="editItem(item)">
                       <v-icon> mdi-pencil </v-icon>
                     </v-btn>
@@ -149,7 +114,7 @@ export default {
         let response = await axios.get('api/genders');
         vm.genders = response.data.genders;
         console.log(response.data);
-      } catch (error) {}
+      } catch (error) { }
     },
     addNew() {
       const vm = this;

@@ -4,9 +4,7 @@
       <v-divider style="border-color: white"></v-divider>
       <v-list-item>
         <v-list-item-avatar size="200">
-          <v-img
-            src="../assets/promusica.jpg"
-            alt="user picture"></v-img>
+          <v-img src="../assets/promusica.jpg" alt="user picture"></v-img>
         </v-list-item-avatar>
       </v-list-item>
       <v-list-item-group>
@@ -20,9 +18,7 @@
               {{ $store.state.user.email }}
             </v-list-item-subtitle>
           </v-list-item-content>
-          <v-icon right large color="amber accent-2" class="mr-2"
-            >mdi-shield-crown-outline</v-icon
-          >
+          <v-icon right large color="amber accent-2" class="mr-2">mdi-shield-crown-outline</v-icon>
         </v-list-item>
       </v-list-item-group>
       <v-divider style="border-color: white"></v-divider>
@@ -34,9 +30,7 @@
             <v-icon v-text="item.icon" class="white--text"></v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title
-              class="white--text"
-              v-text="item.text"></v-list-item-title>
+            <v-list-item-title class="white--text" v-text="item.text"></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -64,10 +58,8 @@ export default {
 
 <style>
 .gradient {
-  background: linear-gradient(
-    180deg,
-    rgba(69, 39, 160, 1) 37%,
-    rgba(126, 87, 194, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(69, 39, 160, 1) 37%,
+      rgba(126, 87, 194, 1) 100%);
 }
 </style>
