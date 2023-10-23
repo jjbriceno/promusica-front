@@ -12,27 +12,27 @@ const routes = [
   },
   {
     path: '/dashboard',
-    component: () => import(/* webpackChunkName: "dashboard" */ '../components/Dashboard.vue'),
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue'),
     name: 'Dashboard'
   },
   {
     path: '/authors',
-    component: () => import(/* webpackChunkName: "authors" */ '../components/Authors.vue'),
+    component: () => import(/* webpackChunkName: "authors" */ '../views/Authors.vue'),
     name: 'Authors'
   },
   {
     path: '/genders',
-    component: () => import(/* webpackChunkName: "genders" */ '../components/Genders.vue'),
+    component: () => import(/* webpackChunkName: "genders" */ '../views/Genders.vue'),
     name: 'Genders'
   },
   {
     path: '/loans',
-    component: () => import(/* webpackChunkName: "loans" */ '../components/Loans.vue'),
+    component: () => import(/* webpackChunkName: "loans" */ '../views/Loans.vue'),
     name: 'Loans'
   },
   {
     path: '/borrowers',
-    component: () => import(/* webpackChunkName: "borrowers" */ '../components/Borrowers.vue'),
+    component: () => import(/* webpackChunkName: "borrowers" */ '../views/Borrowers.vue'),
     name: 'Borrowers'
   },
 ]
