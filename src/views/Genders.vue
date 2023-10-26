@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-card elevation="8" class="">
-      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+    <v-card dark elevation="8" color="#4c4e7e">
+      <v-card-title primary-title class="font-weight-black white--text text-subtitle-1 text-uppercase">
         Géneros Musicales
         <v-spacer></v-spacer>
         <v-tooltip bottom>
@@ -38,7 +38,7 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="genders" sort-by="id" loading="true" :search="search">
+      <v-data-table :headers="headers" :items="genders" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -47,7 +47,7 @@
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="primary" v-on="on" v-bind="attrs"
+                    <v-btn fab x-small class="white--text mr-1" color="primary" v-on="on" v-bind="attrs"
                       @click="editItem(item)">
                       <v-icon> mdi-pencil </v-icon>
                     </v-btn>

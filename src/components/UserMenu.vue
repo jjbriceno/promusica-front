@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y>
     <template v-slot:activator="{ on, attrs }">
-      <v-btn v-on="on" depressed large color="deep-purple darken-3">
+      <v-btn v-on="on" depressed large color="#30314f">
         <v-list-item two-line dense>
           <v-badge bordered bottom color="success" dot offset-x="8" offset-y="10">
             <v-avatar size="40" color="#CE93D8">
@@ -19,7 +19,7 @@
         </v-list-item>
       </v-btn>
     </template>
-    <v-list dense dark color="deep-purple darken-3">
+    <v-list dense dark color="#30314f">
       <v-list-item-group>
         <v-list-item v-for="(item, i) in items" :key="i">
           <v-list-item-icon>
@@ -40,7 +40,7 @@ export default {
       {
         icon: 'mdi-account-box',
         text: 'Editar perfil',
-        action: '',
+        action: 'editProfile',
       },
       {
         icon: 'mdi-logout-variant',
@@ -59,6 +59,10 @@ export default {
       await vm.$store.dispatch('logout');
       vm.$router.push('/');
     },
+    async editProfile() {
+      const vm = this;
+      vm.$router.push('/profile');
+    }
   },
 };
 </script>

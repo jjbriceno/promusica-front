@@ -3,11 +3,11 @@
     <v-row align="center" justify="center">
       <v-col cols="12" md="6">
         <v-form>
-          <v-card elevation="6">
-            <v-toolbar color="deep-purple darken-3" dark>
+          <v-card dark elevation="6" color="#30314f">
+            <v-toolbar color="#4c4e7e" dark>
               <v-row>
                 <v-col cols="12" align="center">
-                  <v-list-item-title class="white--text text-h6">
+                  <v-list-item-title class="white--text text-h6 text-uppercase">
                     Bienvenido
                   </v-list-item-title>
                 </v-col>
@@ -25,7 +25,7 @@
             <v-card-actions fill-height>
               <v-row class="pb-4">
                 <v-col align="center" cols="12">
-                  <v-btn color="primary" @click="login">Iniciar Sesión</v-btn>
+                  <v-btn color="#4c4e7e" @click="login">Iniciar Sesión</v-btn>
                 </v-col>
               </v-row>
             </v-card-actions>

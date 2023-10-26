@@ -1,7 +1,7 @@
 <template>
-  <v-app>
+  <v-app style="background-color: #393c5f;">
     <Drawer v-if="$store.state.auth" />
-    <v-app-bar dark color="deep-purple darken-3" app>
+    <v-app-bar dark color="#30314f" app>
       <v-app-bar-nav-icon>
         <v-icon>mdi-account-school</v-icon>
       </v-app-bar-nav-icon>
@@ -38,11 +38,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.gradient {
-  background: linear-gradient(180deg,
-      rgba(69, 39, 160, 1) 37%,
-      rgba(126, 87, 194, 1) 100%);
-}
-</style>

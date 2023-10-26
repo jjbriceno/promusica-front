@@ -1,7 +1,8 @@
 <template>
   <v-container>
-    <v-card elevation="8" class="">
-      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+    <v-card dark elevation="8" style="background-color: #4c4e7e;">
+
+      <v-card-title primary-title class="font-weight-black text-subtitle-1 text-uppercase">
         Partituras
         <v-spacer></v-spacer>
         <v-tooltip bottom>
@@ -13,35 +14,36 @@
           <span>Agregar nueva partitura</span>
         </v-tooltip>
       </v-card-title>
-      <v-card-subtitle> Lista de partituras </v-card-subtitle>
-      <hr style="color: #4527a0" />
+      <v-card-subtitle class="white--text"> Lista de partituras </v-card-subtitle>
+      <hr color="white" />
+
       <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="dialog" :overlay="false" max-width="700px"
         transition="dialog-transition">
-        <v-card class="">
-          <v-toolbar dark color="#4527a0">
-            <v-toolbar-title>{{
+        <v-card dark elevation="8" color="#4c4e7e">
+          <v-toolbar dark color="#393c5f">
+            <v-toolbar-title class="text-uppercase font-weight-black text-subtitle-1">{{
               isEdit ? 'Editar partitura' : 'Agregar nueva partitura'
             }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
             <v-form @submit.prevent="save" ref="form">
-              <v-text-field v-model="form.title" placeholder="Título" name="title" label="Título" id="id"
+              <v-text-field :error-messages="" v-model="form.title" placeholder="Título" name="title" label="Título" id="id"
                 outlined></v-text-field>
-              <v-autocomplete v-model="form.authorId" item-text="full_name" item-value="id" outlined label="Autor"
+              <v-autocomplete :error-messages="" v-model="form.authorId" item-text="full_name" item-value="id" outlined label="Autor"
                 :items="authors"></v-autocomplete>
-              <v-autocomplete :items="genders" item-text="name" item-value="id" v-model="form.genderId" label="Géneros"
+              <v-autocomplete :error-messages="" :items="genders" item-text="name" item-value="id" v-model="form.genderId" label="Géneros"
                 outlined></v-autocomplete>
               <!-- Location -->
               <!-- Estante -->
-              <v-autocomplete offset-y :items="drawers" item-text="name" item-value="id" v-model="form.drawerId"
+              <v-autocomplete :error-messages="" offset-y :items="drawers" item-text="name" item-value="id" v-model="form.drawerId"
                 label="Estante" outlined></v-autocomplete>
               <!-- Gaveta -->
-              <v-autocomplete :items="cabinets" item-text="name" item-value="id" v-model="form.cabinetId" label="Gaveta"
+              <v-autocomplete :error-messages="" :items="cabinets" item-text="name" item-value="id" v-model="form.cabinetId" label="Gaveta"
                 outlined></v-autocomplete>
-              <v-text-field v-model.number="form.cuantity" placeholder="Cantidad" name="Cantidad" label="Cantidad" id="id"
+              <v-text-field :error-messages="" v-model.number="form.cuantity" placeholder="Cantidad" name="Cantidad" label="Cantidad" id="id"
                 type="number" min="1" outlined></v-text-field>
               <v-card-actions>
-                <v-btn type="submit" color="primary">Guardar</v-btn>
+                <v-btn type="submit" color="success">Guardar</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn dark color="red" @click="cancel">Cancelar</v-btn>
               </v-card-actions>
@@ -49,6 +51,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
       <v-dialog v-model="dialogDelete" max-width="450px">
         <v-card>
           <v-card-title class="text-h5">¿Está seguro de eliminar la partitura?</v-card-title>
@@ -61,6 +64,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
       <v-dialog @click:outside="resetLoan" @keydown.esc="resetLoan" v-model="loanDialog" :overlay="false"
         max-width="700px" transition="dialog-transition">
         <v-card>
@@ -96,14 +100,18 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
       <v-card-title>
-        <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
+        <v-text-field dark v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+          hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="musicSheets" sort-by="id" loading="true" :search="search">
+
+      <v-data-table :headers="headers" :items="music_sheets" sort-by="id" loading="true" :search="search"
+        style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
-              <td class="td">{{ item.id }}</td>
+              <td class="td"> &nbsp </td>
               <td class="td">{{ item.title }}</td>
               <td class="td">{{ item.author.full_name }}</td>
               <td class="td">
@@ -120,7 +128,7 @@
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="primary" @click="editItem(item)" v-on="on"
+                    <v-btn fab x-small class="white--text mr-1" color="primary" @click="editItem(item)" v-on="on"
                       v-bind="attrs">
                       <v-icon> mdi-pencil </v-icon>
                     </v-btn>
@@ -129,7 +137,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="red" @click="comfirmDelete(item)"
+                    <v-btn fab x-small class="white--text mr-1" color="red" @click="comfirmDelete(item)"
                       :disabled="item.available === 0" v-on="on" v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
                     </v-btn>
@@ -138,7 +146,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn :disabled="item.available === 0" fab small class="white--text" color="purple"
+                    <v-btn :disabled="item.available === 0" fab x-small class="white--text" color="purple"
                       @click="startLoan(item)" v-on="on" v-bind="attrs">
                       <v-icon> mdi-hand-coin </v-icon>
                     </v-btn>
@@ -150,11 +158,13 @@
           </v-hover>
         </template>
       </v-data-table>
+
     </v-card>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 import DatePicker from '../components/DatePicker.vue';
 
 export default {
@@ -183,9 +193,7 @@ export default {
       loan: {},
       headers: [
         {
-          text: 'Id',
-          value: 'id',
-          filterable: false,
+          id: '',
         },
         {
           text: 'Título',
@@ -216,18 +224,40 @@ export default {
           sortable: false,
         },
       ],
-      musicSheets: [],
+      music_sheets: [],
       errors: [],
+      routes:
+        [
+          "authors",
+          "genders",
+          "drawers",
+          "cabinets",
+          "borrowers",
+          "music-sheets"
+        ],
     };
   },
   async created() {
     const vm = this;
-    await vm.getMusicSheets();
-    await vm.getAuthors();
-    await vm.getGenders();
-    await vm.getDrawers();
-    await vm.getCabinets();
-    await vm.getBorrowers();
+    [
+      { authors: vm.authors },
+      { genders: vm.genders },
+      { drawers: vm.drawers },
+      { cabinets: vm.cabinets },
+      { borrowers: vm.borrowers },
+      { music_sheet: vm.music_sheets }
+    ] = await Promise.all(vm.routesArray);
+  },
+  computed: {
+    routesArray() {
+      const vm = this;
+      return vm.routes.map((route) => {
+        return axios.get('api' + '/' + route);
+      }).map(async (promise) => {
+        const result = await promise;
+        return result.data;
+      })
+    },
   },
   methods: {
     hoverColors(hover) {
@@ -236,56 +266,6 @@ export default {
         background: hover ? '#4527A0' : 'inherit',
       };
     },
-
-    async getMusicSheets() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/music-sheets');
-        vm.musicSheets = response.data.music_sheet;
-      } catch (error) { }
-    },
-
-    async getAuthors() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/authors');
-        vm.authors = response.data.authors;
-      } catch (error) { }
-    },
-
-    async getGenders() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/genders');
-        vm.genders = response.data.genders;
-      } catch (error) { }
-    },
-
-    async getDrawers() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/drawers');
-        vm.drawers = response.data.drawers;
-      } catch (error) { }
-    },
-
-    async getCabinets() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/cabinets');
-        vm.cabinets = response.data.cabinets;
-      } catch (error) { }
-    },
-
-    async getBorrowers() {
-      const vm = this;
-      try {
-        let response = await axios.get('api/borrowers');
-        vm.borrowers = response.data.borrowers;
-        console.log(vm.borrowers);
-      } catch (error) { }
-    },
-
     async save() {
       const vm = this;
       try {
@@ -296,15 +276,15 @@ export default {
           }
         );
         if (vm.isEdit) {
-          Object.assign(vm.musicSheets[vm.editIndex], response.data.item);
+          Object.assign(vm.music_sheets[vm.editIndex], response.data.item);
         } else {
-          vm.musicSheets.push(response.data.item);
+          vm.music_sheets.push(response.data.item);
         }
 
         vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
       } catch (error) {
-        console.log(error);
+        console.log(error.errors);
       }
     },
 
@@ -322,7 +302,7 @@ export default {
     comfirmDelete(item) {
       const vm = this;
       vm.itemToDelete = Object.assign({}, item);
-      vm.deleteIndex = vm.musicSheets.findIndex((obj) => obj.id === item.id);
+      vm.deleteIndex = vm.music_sheets.findIndex((obj) => obj.id === item.id);
       vm.dialogDelete = !vm.dialogDelete;
     },
 
@@ -336,7 +316,7 @@ export default {
     editItem(item) {
       const vm = this;
 
-      vm.editIndex = vm.musicSheets.indexOf(item);
+      vm.editIndex = vm.music_sheets.indexOf(item);
 
       vm.isEdit = true;
 
@@ -355,16 +335,14 @@ export default {
 
     async deleteItem(item) {
       const vm = this;
-
       try {
         await axios.post(`api/music-sheets/destroy/${item.id}`);
         vm.$nextTick(() => {
-          vm.musicSheets.splice(vm.deleteIndex, 1);
+          vm.music_sheets.splice(vm.deleteIndex, 1);
         });
         vm.dialogDelete = false;
       } catch (error) { }
     },
-
     addNew() {
       const vm = this;
       vm.dialog = !vm.dialog;
@@ -374,7 +352,7 @@ export default {
     startLoan(item) {
       const vm = this;
       vm.loanDialog = !vm.loanDialog;
-      vm.loanIndex = vm.musicSheets.indexOf(item);
+      vm.loanIndex = vm.music_sheets.indexOf(item);
       vm.loan = {
         id: item.id,
         title: item.title,
@@ -393,7 +371,7 @@ export default {
         const vm = this;
         let response = await axios.post('api/loan/store', { ...vm.loan });
         vm.loanCuantity = vm.loan.cuantity;
-        vm.musicSheets[vm.loanIndex].available -= vm.loanCuantity;
+        vm.music_sheets[vm.loanIndex].available -= vm.loanCuantity;
 
         let updateResponse = await axios.post(`api/music-sheets/update`, {
           id: vm.loan.id,
@@ -402,7 +380,6 @@ export default {
 
         vm.$refs.loanForm.reset();
         vm.loanDialog = !vm.loanDialog;
-        console.log(vm.loanCuantity);
       } catch (error) { }
     },
 
@@ -427,13 +404,4 @@ export default {
 .td {
   text-align: left !important;
 }
-
-// .on-hover-bg {
-//     display: table-row;
-// }
-
-// .on-hover-bg:hover {
-//     color: white !important;
-//     background: #1565c0 !important;
-// }
 </style>

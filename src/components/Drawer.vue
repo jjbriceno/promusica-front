@@ -1,10 +1,12 @@
 <template>
-  <v-navigation-drawer app class="gradient">
+  <v-navigation-drawer app style="background-color: #30314f;">
     <v-list two-line rounded>
       <v-divider style="border-color: white"></v-divider>
       <v-list-item>
         <v-list-item-avatar size="200">
-          <v-img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=1000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D" alt="user picture"></v-img>
+          <v-img
+            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80"
+            alt="user picture"></v-img>
         </v-list-item-avatar>
       </v-list-item>
       <v-list-item-group>

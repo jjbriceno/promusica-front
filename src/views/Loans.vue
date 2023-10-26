@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+    <v-card dark elevation="8" color="#4c4e7e">
+      <v-card-title primary-title class="font-weight-black white--text text-subtitle-1 text-uppercase">
         Préstamos
         <v-spacer></v-spacer>
       </v-card-title>
@@ -10,7 +10,7 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="loans" sort-by="id" loading="true" :search="search">
+      <v-data-table :headers="headers" :items="loans" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -21,7 +21,7 @@
               <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="red" v-on="on" @click="comfirmDelete(item)"
+                    <v-btn fab x-small class="white--text mr-1" color="red" v-on="on" @click="comfirmDelete(item)"
                       v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
                     </v-btn>
@@ -30,7 +30,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="cyan" v-on="on" @click="viewLoanDetails(item)"
+                    <v-btn fab x-small class="white--text mr-1" color="cyan" v-on="on" @click="viewLoanDetails(item)"
                       v-bind="attrs">
                       <v-icon> mdi-eye </v-icon>
                     </v-btn>

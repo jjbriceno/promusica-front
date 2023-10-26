@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-title primary-title class="font-weight-black primary--text text-subtitle-1 text-uppercase">
+    <v-card dark elevation="8" color="#4c4e7e">
+      <v-card-title primary-title class="font-weight-black white--text text-subtitle-1 text-uppercase">
         Prestatarios
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-subtitle> Registrar nuevo prestatario </v-card-subtitle>
-      <hr style="color: #4527a0" />
+      <hr style="color: white" />
       <v-card-text>
         <v-form @submit.prevent="submit" ref="form">
           <v-container>
@@ -40,11 +40,11 @@
         </v-form>
       </v-card-text>
     </v-card>
-    <v-card class="mt-6">
+    <v-card dark elevation="8" color="#4c4e7e" class="mt-6">
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="borrowers" sort-by="id" loading="true" :search="search">
+      <v-data-table :headers="headers" :items="borrowers" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -57,7 +57,7 @@
               <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab small class="white--text mr-1" color="primary" @click="editItem(item)" v-on="on"
+                    <v-btn fab x-small class="white--text mr-1" color="primary" @click="editItem(item)" v-on="on"
                       v-bind="attrs">
                       <v-icon> mdi-pencil </v-icon>
                     </v-btn>
@@ -66,7 +66,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn @click="comfirmDelete(item)" fab small class="white--text mr-1" color="red" v-on="on"
+                    <v-btn @click="comfirmDelete(item)" fab x-small class="white--text mr-1" color="red" v-on="on"
                       v-bind="attrs">
                       <v-icon> mdi-delete </v-icon>
                     </v-btn>
