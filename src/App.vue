@@ -20,6 +20,13 @@
         </v-slide-x-transition>
       </v-container>
     </v-main>
+    <!-- Add the footer here -->
+    <v-footer color="#30314f">
+      <v-spacer></v-spacer>
+      <div class="text-center white--text">
+        &copy; 2023 Your Company Name
+      </div>
+    </v-footer>
   </v-app>
 </template>
 

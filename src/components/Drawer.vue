@@ -4,9 +4,7 @@
       <v-divider style="border-color: white"></v-divider>
       <v-list-item>
         <v-list-item-avatar size="200">
-          <v-img
-            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80"
-            alt="user picture"></v-img>
+          <v-img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80" alt="user picture"></v-img>
         </v-list-item-avatar>
       </v-list-item>
       <v-list-item-group>

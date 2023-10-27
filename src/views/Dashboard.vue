@@ -25,23 +25,32 @@
               isEdit ? 'Editar partitura' : 'Agregar nueva partitura'
             }}</v-toolbar-title>
           </v-toolbar>
+
           <v-card-text class="pt-8">
             <v-form @submit.prevent="save" ref="form">
-              <v-text-field :error-messages="" v-model="form.title" placeholder="Título" name="title" label="Título" id="id"
-                outlined></v-text-field>
-              <v-autocomplete :error-messages="" v-model="form.authorId" item-text="full_name" item-value="id" outlined label="Autor"
-                :items="authors"></v-autocomplete>
-              <v-autocomplete :error-messages="" :items="genders" item-text="name" item-value="id" v-model="form.genderId" label="Géneros"
-                outlined></v-autocomplete>
-              <!-- Location -->
-              <!-- Estante -->
-              <v-autocomplete :error-messages="" offset-y :items="drawers" item-text="name" item-value="id" v-model="form.drawerId"
-                label="Estante" outlined></v-autocomplete>
-              <!-- Gaveta -->
-              <v-autocomplete :error-messages="" :items="cabinets" item-text="name" item-value="id" v-model="form.cabinetId" label="Gaveta"
-                outlined></v-autocomplete>
-              <v-text-field :error-messages="" v-model.number="form.cuantity" placeholder="Cantidad" name="Cantidad" label="Cantidad" id="id"
-                type="number" min="1" outlined></v-text-field>
+
+              <v-text-field :error-messages="titleError" v-model="form.title" placeholder="Título" name="title"
+                label="Título" id="id" outlined></v-text-field>
+
+              <v-autocomplete :error-messages="authorError" v-model="form.authorId" item-text="full_name" item-value="id"
+                outlined label="Autor" :items="authors"></v-autocomplete>
+
+              <v-autocomplete :error-messages="gendersError" :items="genders" item-text="name" item-value="id"
+                v-model="form.genderId" label="Géneros" outlined></v-autocomplete>
+
+              <v-autocomplete :error-messages="drawersError" :items="drawers" item-text="name" item-value="id"
+                v-model="form.drawerId" label="Estante" outlined></v-autocomplete>
+
+              <v-autocomplete :error-messages="cabinetError" :items="cabinets" item-text="name" item-value="id"
+                v-model="form.cabinetId" label="Gaveta" outlined></v-autocomplete>
+
+              <v-text-field :error-messages="cuantityError" v-model.number="form.cuantity" placeholder="Cantidad"
+                name="Cantidad" label="Cantidad" id="id" type="number" min="1" outlined></v-text-field>
+
+              <v-file-input clearable show-size counter density="compact" prepend-icon="mdi-camera" v-model="form.file"
+                accept="image/jpeg, image/png, image/pdf"
+                label="Imagen de la partitura (.jpeg .png .pdf | max:2MB)"></v-file-input>
+
               <v-card-actions>
                 <v-btn type="submit" color="success">Guardar</v-btn>
                 <v-spacer></v-spacer>
@@ -166,6 +175,8 @@
 <script>
 import axios from 'axios';
 import DatePicker from '../components/DatePicker.vue';
+import { ref } from 'vue'
+const file = ref([])
 
 export default {
   components: {
@@ -174,6 +185,7 @@ export default {
   data() {
     return {
       form: {},
+      file: [],
       isEdit: false,
       editIndex: -1,
       dialogDelete: false,
@@ -225,7 +237,14 @@ export default {
         },
       ],
       music_sheets: [],
-      errors: [],
+      errors: {
+        title: '',
+        authorId: '',
+        cabinetId: '',
+        cuantity: '',
+        drawerId: '',
+        genderId: '',
+      },
       routes:
         [
           "authors",
@@ -247,6 +266,7 @@ export default {
       { borrowers: vm.borrowers },
       { music_sheet: vm.music_sheets }
     ] = await Promise.all(vm.routesArray);
+
   },
   computed: {
     routesArray() {
@@ -258,6 +278,34 @@ export default {
         return result.data;
       })
     },
+    titleError() {
+      const vm = this;
+      return !vm.form.title && vm.errors.title[0] ? vm.errors.title[0] : '';
+    },
+    authorError() {
+      const vm = this;
+      return !vm.form.authorId && vm.errors.authorId[0] ? vm.errors.authorId[0] : '';
+    },
+    cabinetError() {
+      const vm = this;
+      return !vm.form.cabinetId && vm.errors.cabinetId[0] ? vm.errors.cabinetId[0] : '';
+    },
+    gendersError() {
+      const vm = this;
+      return !vm.form.genderId && vm.errors.genderId[0] ? vm.errors.genderId[0] : '';
+    },
+    drawersError() {
+      const vm = this;
+      return !vm.form.drawerId && vm.errors.drawerId[0] ? vm.errors.drawerId[0] : '';
+    },
+    cabinetsError() {
+      const vm = this;
+      return !vm.form.cabinetId && vm.errors.cabinetId[0] ? vm.errors.cabinetId[0] : '';
+    },
+    cuantityError() {
+      const vm = this;
+      return !vm.form.cuantity && vm.errors.cuantity[0] ? vm.errors.cuantity[0] : '';
+    }
   },
   methods: {
     hoverColors(hover) {
@@ -268,30 +316,52 @@ export default {
     },
     async save() {
       const vm = this;
+      vm.resetErrors();
       try {
+        const formData = new FormData();
+        let keys = Object.keys(vm.form);
+        keys.forEach((key) => {
+          formData.append(key, vm.form[key]);
+        });
+
         let response = await axios.post(
-          `api/music-sheets/${vm.isEdit ? 'edit' : 'store'}`,
-          {
-            ...vm.form,
+          `api/music-sheets/${vm.isEdit ? 'edit' : 'store'}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
           }
-        );
+        });
+
         if (vm.isEdit) {
           Object.assign(vm.music_sheets[vm.editIndex], response.data.item);
         } else {
           vm.music_sheets.push(response.data.item);
         }
-
         vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
+
       } catch (error) {
-        console.log(error.errors);
+        vm.errors = error.response.data.errors;
+        console.log(vm.errors);
       }
     },
 
     cancel() {
       const vm = this;
       vm.dialog = !vm.dialog;
+      vm.resetErrors();
       vm.reset();
+    },
+
+    resetErrors() {
+      const vm = this;
+      vm.errors = {
+        title: '',
+        authorId: '',
+        cabinetId: '',
+        cuantity: '',
+        drawerId: '',
+        genderId: '',
+      };
     },
 
     reset() {
