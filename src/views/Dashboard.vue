@@ -165,7 +165,7 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn fab x-small class="white--text" color="success" v-on="on"
-                      v-bind="attrs">
+                      @click="downloadFile(item.music_sheet_file_id)" v-bind="attrs">
                       <v-icon> mdi-download </v-icon>
                     </v-btn>
                   </template>
@@ -176,7 +176,6 @@
           </v-hover>
         </template>
       </v-data-table>
-
     </v-card>
   </v-container>
 </template>
@@ -211,9 +210,7 @@ export default {
       loanCuantity: '',
       loan: {},
       headers: [
-        {
-          id: '',
-        },
+        {},
         {
           text: 'Título',
           value: 'title',
@@ -316,6 +313,36 @@ export default {
     }
   },
   methods: {
+    async downloadFile(file_id) {
+      try {
+        // Make an Axios GET request to fetch the file
+        const response = await axios.get(`/api/sheet-file/download/${file_id}`, {
+          responseType: 'blob',
+        });
+
+        // Create a Blob from the response data
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+
+        // Create a URL for the Blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a hidden anchor element for downloading the file
+        const downloadLink = document.createElement('a');
+        downloadLink.style.display = 'none';
+        downloadLink.href = url;
+        downloadLink.download = 'my-file-name.ext'; // Set the desired file name
+
+        // Trigger a click event on the anchor element to initiate the download
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // Release the URL object
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error downloading file:', error);
+      }
+    },
     async getDataFromApi() {
       this.loading = true
       await axios.get('api/music-sheets').then(data => {
@@ -344,7 +371,7 @@ export default {
         let response = await axios.post(
           `api/music-sheets/${vm.isEdit ? 'edit' : 'store'}`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': "multipart/form-data",
           }
         });
         if (vm.isEdit) {
