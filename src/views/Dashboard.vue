@@ -47,8 +47,8 @@
               <v-text-field :error-messages="cuantityError" v-model.number="form.cuantity" placeholder="Cantidad"
                 name="Cantidad" label="Cantidad" id="id" type="number" min="1" outlined></v-text-field>
 
-              <v-file-input clearable show-size counter density="compact" prepend-icon="mdi-camera" v-model="form.file"
-                accept="image/jpeg, image/png, image/pdf"
+              <v-file-input clearable show-size density="compact" prepend-icon="mdi-camera" v-model="form.file"
+                accept="image/jpeg, image/png, application/pdf"
                 label="Imagen de la partitura (.jpeg .png .pdf | max:2MB)"></v-file-input>
 
               <v-card-actions>
@@ -115,8 +115,8 @@
           hide-details></v-text-field>
       </v-card-title>
 
-      <v-data-table :headers="headers" :items="music_sheets" sort-by="id" loading="true" :search="search"
-        style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="music_sheets" sort-by="id" :loading="loading" :search="search"
+        :options.sync="options" :server-items-length="totalDesserts" style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -155,12 +155,21 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn :disabled="item.available === 0" fab x-small class="white--text" color="purple"
+                    <v-btn :disabled="item.available === 0" fab x-small class="white--text mr-1" color="purple"
                       @click="startLoan(item)" v-on="on" v-bind="attrs">
                       <v-icon> mdi-hand-coin </v-icon>
                     </v-btn>
                   </template>
                   <span>Préstamo</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn fab x-small class="white--text" color="success" v-on="on"
+                      v-bind="attrs">
+                      <v-icon> mdi-download </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Descargar</span>
                 </v-tooltip>
               </td>
             </tr>
@@ -175,8 +184,6 @@
 <script>
 import axios from 'axios';
 import DatePicker from '../components/DatePicker.vue';
-import { ref } from 'vue'
-const file = ref([])
 
 export default {
   components: {
@@ -252,8 +259,10 @@ export default {
           "drawers",
           "cabinets",
           "borrowers",
-          "music-sheets"
         ],
+      loading: true,
+      options: {},
+      totalDesserts: 0,
     };
   },
   async created() {
@@ -264,7 +273,6 @@ export default {
       { drawers: vm.drawers },
       { cabinets: vm.cabinets },
       { borrowers: vm.borrowers },
-      { music_sheet: vm.music_sheets }
     ] = await Promise.all(vm.routesArray);
 
   },
@@ -308,6 +316,15 @@ export default {
     }
   },
   methods: {
+    async getDataFromApi() {
+      this.loading = true
+      await axios.get('api/music-sheets').then(data => {
+        this.music_sheets = data.data.music_sheet
+        console.log(data.data.music_sheet)
+        this.totalDesserts = data.data.music_sheet.length
+        this.loading = false
+      })
+    },
     hoverColors(hover) {
       return {
         color: hover ? 'white' : 'inherit',
@@ -330,7 +347,6 @@ export default {
             'Content-Type': 'multipart/form-data',
           }
         });
-
         if (vm.isEdit) {
           Object.assign(vm.music_sheets[vm.editIndex], response.data.item);
         } else {
@@ -361,6 +377,7 @@ export default {
         cuantity: '',
         drawerId: '',
         genderId: '',
+        file: ''
       };
     },
 
@@ -466,6 +483,14 @@ export default {
   },
   mounted() {
     document.title = 'Partituras';
+  },
+  watch: {
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
   },
 };
 </script>
