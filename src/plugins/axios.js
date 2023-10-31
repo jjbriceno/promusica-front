@@ -1,23 +1,10 @@
-import axios from 'axios';
+import axios_ from 'axios'
 
-window.axios = axios;
+const axios = axios_.create({
+    baseURL: process.env.VUE_APP_API_URL,
+    timeout: 2000,
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    withCredentials: true
+});
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-window.axios.defaults.withCredentials = true;
-
-window.axios.defaults.baseURL = process.env.VUE_APP_API_URL;
-
-export default window.axios;
-// export default window.axios;
-// import axios from 'axios'
-
-// // insert all your axios logic here
-
-// export const axios
-
-// export default {
-//     install(Vue, options) {
-//         Vue.prototype.$axios = axios
-//     }
-// }
+window.axios = axios

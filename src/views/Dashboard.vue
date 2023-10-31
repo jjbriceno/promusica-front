@@ -181,7 +181,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import DatePicker from '../components/DatePicker.vue';
 
 export default {
