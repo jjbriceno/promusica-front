@@ -116,7 +116,7 @@
       </v-card-title>
 
       <v-data-table :headers="headers" :items="music_sheets" sort-by="id" :loading="loading" :search="search"
-        :options.sync="options" :server-items-length="totalDesserts" style="background-color: #4c4e7e;">
+        :options.sync="options" :server-items-length="totalItems" style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -258,7 +258,7 @@ export default {
         ],
       loading: true,
       options: {},
-      totalDesserts: 0,
+      totalItems: 0,
     };
   },
   async created() {
@@ -344,10 +344,10 @@ export default {
     },
     async getDataFromApi() {
       this.loading = true
-      await axios.get('api/music-sheets').then(data => {
+      console.log(this.options);
+      await axios.get(`api/music-sheets?sortBy=${this.options.sortBy[0]}&itemsPerPage=${this.options.itemsPerPage}`).then(data => {
         this.music_sheets = data.data.music_sheet
-        console.log(data.data.music_sheet)
-        this.totalDesserts = data.data.music_sheet.length
+        this.totalItems = data.data.music_sheet.length
         this.loading = false
       })
     },
