@@ -314,6 +314,7 @@ export default {
   methods: {
     async downloadFile(file_id) {
       try {
+        console.log(file_id);
         // Make an Axios GET request to fetch the file
         const response = await axios.get(`/api/sheet-file/download/${file_id}`, {
           responseType: 'blob',
@@ -344,7 +345,6 @@ export default {
     },
     async getDataFromApi() {
       this.loading = true
-      console.log(this.options);
       await axios.get(`api/music-sheets?sortBy=${this.options.sortBy[0]}&itemsPerPage=${this.options.itemsPerPage}`).then(data => {
         this.music_sheets = data.data.music_sheet
         this.totalItems = data.data.music_sheet.length

@@ -14,12 +14,13 @@
               </v-row>
             </v-toolbar>
             <v-card-text class="mt-6">
-              <v-text-field placeholder="Email" outlined prepend-icon="mdi-account" name="email" label="Email"
-                :rules="[rules.required, rules.email]" id="email" type="text" v-model="form.email"></v-text-field>
-              <v-text-field maxlength="8" placeholder="Contraseña" outlined prepend-icon="mdi-lock" name="password"
-                label="Contraseña" id="password" hint="La contraseña debe contener al menos 8 caracteres"
-                :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword" counter
-                :error-messages="errors" v-model="form.password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'
+              <v-text-field :error-messages="emailError" placeholder="Email" outlined prepend-icon="mdi-account"
+                name="email" label="Email" :rules="[rules.required, rules.email]" id="email" type="text"
+                v-model="form.email"></v-text-field>
+              <v-text-field :error-messages="passwordError" maxlength="8" placeholder="Contraseña" outlined
+                prepend-icon="mdi-lock" name="password" label="Contraseña" id="password"
+                hint="La contraseña debe contener al menos 8 caracteres" :type="showPassword ? 'text' : 'password'"
+                @click:append="showPassword = !showPassword" counter v-model="form.password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'
                   "></v-text-field>
             </v-card-text>
             <v-card-actions fill-height>
@@ -53,7 +54,10 @@ export default {
         return pattern.test(value) || 'E-mail inválido';
       },
     },
-    errors: '',
+    errors: {
+      email: [],
+      password: [],
+    },
   }),
   methods: {
     async login() {
@@ -62,10 +66,36 @@ export default {
         await vm.$store.dispatch('login', this.form);
         vm.$router.push('dashboard');
       } catch (error) {
-        vm.errors = error.response.data.errors.email[0];
-        console.log(error.response.status, error.response.data.errors);
+        vm.errors = error.response.data.errors;
+        console.log(vm.errors.email);
       }
     },
   },
+  computed: {
+    emailError() {
+      const vm = this;
+      return ("email" in vm.errors) ? vm.errors.email[0] : '';
+    },
+    passwordError() {
+      const vm = this;
+      return ("password" in vm.errors) ? vm.errors.password[0] : '';
+    }
+  },
+  watch: {
+    'form.email': function (newVal, oldVal) {
+      const vm = this;
+      if (newVal != oldVal) {
+        vm.errors.password && (vm.errors.password = []);
+        vm.errors.email = [];
+      }
+    },
+    'form.password': function (newVal, oldVal) {
+      const vm = this;
+      if (newVal != oldVal) {
+        vm.errors.email && (vm.errors.email = []);
+        vm.errors.password = [];
+      }
+    }
+  }
 };
 </script>
