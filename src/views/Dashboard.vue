@@ -15,7 +15,7 @@
         </v-tooltip>
       </v-card-title>
       <v-card-subtitle class="white--text"> Lista de partituras </v-card-subtitle>
-      <hr color="white" />
+      <hr color="#fb13c1" />
 
       <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="dialog" :overlay="false" max-width="700px"
         transition="dialog-transition">
@@ -111,12 +111,12 @@
       </v-dialog>
 
       <v-card-title>
-        <v-text-field dark v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
+        <v-text-field dark @input="searchFilter" v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
           hide-details></v-text-field>
       </v-card-title>
 
-      <v-data-table :headers="headers" :items="music_sheets" sort-by="id" :loading="loading" :search="search"
-        :options.sync="options" :server-items-length="totalItems" style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="this.$store.state.musicSheet.items" sort-by="id" :loading="loading"
+        :search="search" :server-items-length="this.$store.state.musicSheet.perPage" hide-default-footer style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -176,16 +176,20 @@
           </v-hover>
         </template>
       </v-data-table>
+      <Paginate :page="this.$store.state.musicSheet.page" :length="this.$store.state.musicSheet.total" />
     </v-card>
   </v-container>
 </template>
 
 <script>
 import DatePicker from '../components/DatePicker.vue';
+import Paginate from '../components/Paginate.vue';
+import { debounce } from 'lodash';
 
 export default {
   components: {
     DatePicker,
+    Paginate
   },
   data() {
     return {
@@ -257,7 +261,10 @@ export default {
           "borrowers",
         ],
       loading: true,
-      options: {},
+      options: {
+        page: 1,
+        length: 0,
+      },
       totalItems: 0,
     };
   },
@@ -271,10 +278,13 @@ export default {
       { borrowers: vm.borrowers },
     ] = await Promise.all(vm.routesArray);
 
+    vm.loading = false;
   },
   computed: {
     routesArray() {
       const vm = this;
+      vm.loading = true;
+
       return vm.routes.map((route) => {
         return axios.get('api' + '/' + route);
       }).map(async (promise) => {
@@ -312,6 +322,14 @@ export default {
     }
   },
   methods: {
+    searchFilter: debounce(function (val) {
+      const vm = this;
+      vm.search = val;
+
+      if (val) {
+        console.log(val);
+      }
+    }, 2000),
     async downloadFile(file_id) {
       try {
         console.log(file_id);
@@ -343,20 +361,14 @@ export default {
         console.error('Error downloading file:', error);
       }
     },
-    async getDataFromApi() {
-      this.loading = true
-      await axios.get(`api/music-sheets?sortBy=${this.options.sortBy[0]}&itemsPerPage=${this.options.itemsPerPage}`).then(data => {
-        this.music_sheets = data.data.music_sheet
-        this.totalItems = data.data.music_sheet.length
-        this.loading = false
-      })
-    },
+
     hoverColors(hover) {
       return {
         color: hover ? 'white' : 'inherit',
         background: hover ? '#4527A0' : 'inherit',
       };
     },
+
     async save() {
       const vm = this;
       vm.resetErrors();
@@ -456,6 +468,7 @@ export default {
         vm.dialogDelete = false;
       } catch (error) { }
     },
+
     addNew() {
       const vm = this;
       vm.dialog = !vm.dialog;
@@ -509,14 +522,6 @@ export default {
   },
   mounted() {
     document.title = 'Partituras';
-  },
-  watch: {
-    options: {
-      handler() {
-        this.getDataFromApi()
-      },
-      deep: true,
-    },
   },
 };
 </script>

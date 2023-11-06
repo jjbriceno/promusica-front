@@ -50,7 +50,7 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   await store.dispatch("getUser");
-  if (to.fullPath !== '/' && !store.state.auth) {
+  if (to.fullPath !== '/' && !store.state.user.auth) {
     next('/');
   }
   next();

@@ -84,17 +84,13 @@ export default {
   watch: {
     'form.email': function (newVal, oldVal) {
       const vm = this;
-      if (newVal != oldVal) {
-        vm.errors.password && (vm.errors.password = []);
-        vm.errors.email = [];
-      }
+      vm.errors.password && (vm.errors.password = []);
+      vm.errors.email = [];
     },
     'form.password': function (newVal, oldVal) {
       const vm = this;
-      if (newVal != oldVal) {
-        vm.errors.email && (vm.errors.email = []);
-        vm.errors.password = [];
-      }
+      vm.errors.email && (vm.errors.email = []);
+      vm.errors.password = [];
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <v-app style="background-color: #393c5f;">
-    <Drawer v-if="$store.state.auth" />
+    <Drawer v-if="$store.state.user.auth" />
     <v-app-bar dark color="#30314f" app>
       <v-app-bar-nav-icon>
         <v-icon>mdi-account-school</v-icon>
@@ -10,7 +10,7 @@
         <h5>Coro de Niños y Jovenes de la Universidad de los Andes</h5>
       </v-app-bar-title>
       <v-spacer></v-spacer>
-      <UserMenu v-if="$store.state.auth" />
+      <UserMenu v-if="$store.state.user.auth" />
     </v-app-bar>
     <v-main>
       <!-- <Notification :value="true"/> -->
@@ -34,6 +34,7 @@
 import Drawer from './components/Drawer.vue';
 import UserMenu from './components/UserMenu.vue';
 import Notification from './components//Notification.vue';
+
 export default {
   components: {
     Drawer,

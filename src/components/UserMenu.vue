@@ -8,12 +8,12 @@
               <!-- <v-img
                 src="https://d1r8m46oob3o9u.cloudfront.net/images/home-page-examples/01.jpg"></v-img> -->
               <span class="white--text headline">{{
-                $store.state.user.name[0] + $store.state.user.name[1]
+                $store.state.user.user.name[0] + $store.state.user.user.name[1]
               }}</span>
             </v-avatar>
           </v-badge>
           <v-list-item-content>
-            <v-list-item-title v-text="$store.state.user.email"></v-list-item-title>
+            <v-list-item-title v-text="$store.state.user.user.email"></v-list-item-title>
             <v-list-item-subtitle>Admin</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
