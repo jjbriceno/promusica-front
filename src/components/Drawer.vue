@@ -1,27 +1,27 @@
 <template>
   <v-navigation-drawer app style="background-color: #30314f;">
     <v-list two-line rounded>
-      <v-divider style="border-color: white"></v-divider>
+      <v-divider style="border-color: #fb13c1"></v-divider>
       <v-list-item>
         <v-list-item-avatar size="200">
           <v-img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80" alt="user picture"></v-img>
         </v-list-item-avatar>
       </v-list-item>
       <v-list-item-group>
-        <v-divider style="border-color: white"></v-divider>
+        <v-divider style="border-color: #fb13c1"></v-divider>
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title class="white--text text-h6">
-              {{ $store.state.user.name }}
+              {{ this.$store.state.user.user.name }}
             </v-list-item-title>
             <v-list-item-subtitle class="white--text py-2">
-              {{ $store.state.user.email }}
+              {{ this.$store.state.user.user.email }}
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-icon right large color="amber accent-2" class="mr-2">mdi-shield-crown-outline</v-icon>
         </v-list-item>
       </v-list-item-group>
-      <v-divider style="border-color: white"></v-divider>
+      <v-divider style="border-color: #fb13c1"></v-divider>
     </v-list>
     <v-list nav dense rounded>
       <v-list-item-group v-model="selectedItem" color="primary">
@@ -34,7 +34,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
-      <v-divider style="border-color: white"></v-divider>
+      <v-divider style="border-color: #fb13c1"></v-divider>
     </v-list>
   </v-navigation-drawer>
 </template>

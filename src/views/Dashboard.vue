@@ -111,13 +111,12 @@
       </v-dialog>
 
       <v-card-title>
-        <v-text-field dark @input="searchFilter" v-model="search" append-icon="mdi-magnify" label="Buscar" single-line
-          hide-details></v-text-field>
+        <v-text-field dark @keyup.enter="searchFilter" v-model="search" append-icon="mdi-magnify" label="Buscar"
+          single-line hide-details></v-text-field>
       </v-card-title>
 
       <v-data-table :headers="headers" :items="this.$store.state.musicSheet.items" sort-by="id" :loading="loading"
-        :search="search" :server-items-length="this.$store.state.musicSheet.perPage" hide-default-footer
-        style="background-color: #4c4e7e;">
+        :items-per-page="this.$store.state.musicSheet.perPage" hide-default-footer style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -165,7 +164,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab x-small class="white--text" color="success" v-on="on"
+                    <v-btn fab x-small class="white--text" color="success" v-on="on" :disabled="!item.music_sheet_file_id"
                       @click="downloadFile(item.music_sheet_file_id)" v-bind="attrs">
                       <v-icon> mdi-download </v-icon>
                     </v-btn>
@@ -177,7 +176,7 @@
           </v-hover>
         </template>
       </v-data-table>
-      <Paginate :page="this.$store.state.musicSheet.page" :length="this.$store.state.musicSheet.total" />
+      <Paginate :page="getCurrentPage" :length="getTotalPages" :search="search" />
     </v-card>
   </v-container>
 </template>
@@ -185,7 +184,6 @@
 <script>
 import DatePicker from '../components/DatePicker.vue';
 import Paginate from '../components/Paginate.vue';
-import { debounce } from 'lodash';
 
 export default {
   components: {
@@ -277,6 +275,14 @@ export default {
     vm.loading = false;
   },
   computed: {
+    getTotalPages() {
+      const vm = this;
+      return vm.$store.getters.getTotalPages;
+    },
+    getCurrentPage() {
+      const vm = this;
+      return vm.$store.getters.getCurrentPage;
+    },
     routesArray() {
       const vm = this;
       vm.loading = true;
@@ -318,14 +324,20 @@ export default {
     }
   },
   methods: {
-    searchFilter: debounce(function (val) {
+    async searchFilter() {
       const vm = this;
-      vm.search = val;
-
-      if (val) {
-        console.log(val);
+      if (vm.search) {
+        try {
+          let response = await axios.get(`api/music-sheets/search?search=${encodeURIComponent(vm.search)}`);
+          console.log(response.data);
+          if (response.data) {
+            await vm.$store.dispatch("setMusicSheets", response.data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
-    }, 2000),
+    },
     async downloadFile(file_id) {
       try {
         console.log(file_id);
@@ -393,7 +405,7 @@ export default {
         vm.dialog = !vm.dialog;
 
       } catch (error) {
-        // vm.errors = error.response.data.errors;
+        vm.errors = error.response.data.errors;
         console.log(error);
       }
     },
@@ -521,7 +533,15 @@ export default {
   mounted() {
     document.title = 'Partituras';
   },
-};
+  watch: {
+    'search': async function (newVal, oldVal) {
+      const vm = this;
+      const url = "api/music-sheets?page=1";
+      !newVal && await vm.$store.dispatch("getMusicSheets", url);
+    }
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>

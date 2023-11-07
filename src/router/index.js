@@ -55,7 +55,8 @@ router.beforeEach(async (to, from, next) => {
     }
   });
   if (store.state.user.auth) {
-    await store.dispatch("getMusicSheets", 1);
+    const url = "api/music-sheets?page=1"
+    await store.dispatch("getMusicSheets", url);
   }
   next();
 });

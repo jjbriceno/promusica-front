@@ -9,10 +9,17 @@ export default {
     props: {
         page: {
             type: Number,
-            default: 1
+            default: 1,
+            required: true
         },
         length: {
             type: Number,
+            required: true
+        },
+        search: {
+            type: String,
+            default: '',
+            required: true
         }
     },
     data() {
@@ -26,7 +33,12 @@ export default {
     watch: {
         "options.page": async function () {
             const vm = this;
-            await vm.$store.dispatch('getMusicSheets', vm.options.page);
+            const url = (vm.search ? "api/music-sheets/search?search=" + vm.search + "&page=" : "api/music-sheets?page=") + vm.options.page;
+            await vm.$store.dispatch('getMusicSheets', url);
+        },
+        "length": async function (newVal, _) {
+            const vm = this;
+            vm.options.length = newVal;
         }
     }
 }
