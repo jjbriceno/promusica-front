@@ -14,6 +14,12 @@ export default {
         },
         getCurrentPage(state) {
             return state.currentPage;
+        },
+        getMusicSheets(state) {
+            return state.items;
+        },
+        getItemsPerPage(state) {
+            return state.perPage;
         }
     },
     mutations: {

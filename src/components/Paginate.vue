@@ -33,7 +33,9 @@ export default {
     watch: {
         "options.page": async function () {
             const vm = this;
-            const url = (vm.search ? "api/music-sheets/search?search=" + vm.search + "&page=" : "api/music-sheets?page=") + vm.options.page;
+            const url = (vm.search ?
+                "api/music-sheets/search?search=" + encodeURIComponent(vm.search) + "&page=" :
+                "api/music-sheets?page=") + encodeURIComponent(vm.options.page);
             await vm.$store.dispatch('getMusicSheets', url);
         },
         "length": async function (newVal, _) {

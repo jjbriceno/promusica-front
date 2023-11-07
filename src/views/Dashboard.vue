@@ -115,8 +115,8 @@
           single-line hide-details></v-text-field>
       </v-card-title>
 
-      <v-data-table :headers="headers" :items="this.$store.state.musicSheet.items" sort-by="id" :loading="loading"
-        :items-per-page="this.$store.state.musicSheet.perPage" hide-default-footer style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="getMusicSheets" sort-by="id" :loading="loading"
+        :items-per-page="getItemsPerPage" hide-default-footer style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -283,6 +283,14 @@ export default {
       const vm = this;
       return vm.$store.getters.getCurrentPage;
     },
+    getMusicSheets() {
+      const vm = this;
+      return vm.$store.getters.getMusicSheets;
+    },
+    getItemsPerPage() {
+      const vm = this;
+      return vm.$store.getters.getItemsPerPage;
+    },
     routesArray() {
       const vm = this;
       vm.loading = true;
@@ -328,11 +336,8 @@ export default {
       const vm = this;
       if (vm.search) {
         try {
-          let response = await axios.get(`api/music-sheets/search?search=${encodeURIComponent(vm.search)}`);
-          console.log(response.data);
-          if (response.data) {
-            await vm.$store.dispatch("setMusicSheets", response.data);
-          }
+          vm.$store.dispatch("getMusicSheets",
+            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`);
         } catch (error) {
           console.log(error);
         }
