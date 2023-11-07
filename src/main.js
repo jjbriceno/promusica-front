@@ -7,9 +7,6 @@ import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
 
-store.dispatch("getUser");
-// store.dispatch("getMusicSheets", 1);
-
 new Vue({
   router,
   store,

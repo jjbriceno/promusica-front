@@ -116,7 +116,8 @@
       </v-card-title>
 
       <v-data-table :headers="headers" :items="this.$store.state.musicSheet.items" sort-by="id" :loading="loading"
-        :search="search" :server-items-length="this.$store.state.musicSheet.perPage" hide-default-footer style="background-color: #4c4e7e;">
+        :search="search" :server-items-length="this.$store.state.musicSheet.perPage" hide-default-footer
+        style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg td" :style="hoverColors(hover)">
@@ -261,11 +262,6 @@ export default {
           "borrowers",
         ],
       loading: true,
-      options: {
-        page: 1,
-        length: 0,
-      },
-      totalItems: 0,
     };
   },
   async created() {
@@ -385,17 +381,20 @@ export default {
             'Content-Type': "multipart/form-data",
           }
         });
+        let data = {};
         if (vm.isEdit) {
-          Object.assign(vm.music_sheets[vm.editIndex], response.data.item);
+          data = { index: vm.editIndex, item: response.data.item };
+          await vm.$store.dispatch("updateMusicSheet", data);
         } else {
-          vm.music_sheets.push(response.data.item);
+          data = { item: response.data.item };
+          await vm.$store.dispatch("addMusicSheet", data);
         }
         vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
 
       } catch (error) {
-        vm.errors = error.response.data.errors;
-        console.log(vm.errors);
+        // vm.errors = error.response.data.errors;
+        console.log(error);
       }
     },
 
@@ -427,6 +426,7 @@ export default {
     comfirmDelete(item) {
       const vm = this;
       vm.itemToDelete = Object.assign({}, item);
+      // TODO: Remove item from store
       vm.deleteIndex = vm.music_sheets.findIndex((obj) => obj.id === item.id);
       vm.dialogDelete = !vm.dialogDelete;
     },
@@ -440,11 +440,8 @@ export default {
 
     editItem(item) {
       const vm = this;
-
-      vm.editIndex = vm.music_sheets.indexOf(item);
-
+      vm.editIndex = vm.$store.state.musicSheet.items.indexOf(item);
       vm.isEdit = true;
-
       vm.form = {
         id: item.id,
         title: item.title,
@@ -462,6 +459,7 @@ export default {
       const vm = this;
       try {
         await axios.post(`api/music-sheets/destroy/${item.id}`);
+        // TODO: Remove item from store
         vm.$nextTick(() => {
           vm.music_sheets.splice(vm.deleteIndex, 1);
         });

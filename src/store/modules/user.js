@@ -29,7 +29,9 @@ export default {
         async getUser({ commit }) {
             try {
                 let response = await axios.get('api/user');
-                commit("SET_USER", response.data);
+                if (response.status === 200) {
+                    commit("SET_USER", response.data);
+                }
             } catch (error) {
                 if (error.status === 401) {
                     commit("SET_USER", null);

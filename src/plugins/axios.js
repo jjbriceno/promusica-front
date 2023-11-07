@@ -14,4 +14,16 @@ const axios = axios_.create({
     withCredentials: true
 });
 
+axios.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      if (error.response && error.response.status === 419) {
+        window.location.reload();
+      }
+      return Promise.reject(error);
+    }
+  );
+
 window.axios = axios

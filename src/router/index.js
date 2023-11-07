@@ -49,9 +49,13 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  await store.dispatch("getUser");
-  if (to.fullPath !== '/' && !store.state.user.auth) {
-    next('/');
+  await store.dispatch("getUser").then(() => {
+    if (to.fullPath === '/' && store.state.user.auth) {
+      next('/dashboard');
+    }
+  });
+  if (store.state.user.auth) {
+    await store.dispatch("getMusicSheets", 1);
   }
   next();
 });
