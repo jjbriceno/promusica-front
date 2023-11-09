@@ -23,10 +23,12 @@ export default {
     },
     actions: {
         async logout({ commit }) {
-            await axios.post('logout');
-            await commit("SET_USER", {})
-            await commit("SET_AUTH", false);
-            await router.push('/');
+            let response = await axios.post('logout');
+            if (response.status === 204) {
+                await commit("SET_USER", {})
+                await commit("SET_AUTH", false);
+                await router.push('/');
+            }
         },
 
         async login({ dispatch }, credentials) {
