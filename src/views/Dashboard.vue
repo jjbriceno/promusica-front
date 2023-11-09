@@ -52,9 +52,9 @@
                 label="Imagen de la partitura (.jpeg .png .pdf | max:2MB)"></v-file-input>
 
               <v-card-actions>
-                <v-btn type="submit" color="success">Guardar</v-btn>
-                <v-spacer></v-spacer>
                 <v-btn dark color="red" @click="cancel">Cancelar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn type="submit" color="success">Guardar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
@@ -76,9 +76,10 @@
 
       <v-dialog @click:outside="resetLoan" @keydown.esc="resetLoan" v-model="loanDialog" :overlay="false"
         max-width="700px" transition="dialog-transition">
-        <v-card>
-          <v-toolbar dark color="#4527a0">
-            <v-toolbar-title> Realizar préstamo </v-toolbar-title>
+        <v-card dark color="#4c4e7e">
+          <v-toolbar dark color="#393c5f">
+            <v-toolbar-title class="font-weight-black text-subtitle-1 text-uppercase"> Realizar préstamo
+            </v-toolbar-title>
           </v-toolbar>
           <v-card-text class="mt-6">
             <v-form @submit.prevent="saveLoan" ref="loanForm">
@@ -101,9 +102,9 @@
               <v-select :items="cabinets" item-text="name" item-value="id" v-model="loan.cabinetId" label="Gaveta"
                 outlined disabled></v-select>
               <v-card-actions>
-                <v-btn type="submit" color="primary">Guardar</v-btn>
-                <v-spacer></v-spacer>
                 <v-btn dark color="red" @click="resetLoan">Cancelar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn type="submit" color="success">Guardar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
@@ -176,7 +177,7 @@
           </v-hover>
         </template>
       </v-data-table>
-      <Paginate :page="getCurrentPage" :length="getTotalPages" :search="search" />
+      <Paginate :search="search" />
     </v-card>
   </v-container>
 </template>
@@ -271,18 +272,9 @@ export default {
       { cabinets: vm.cabinets },
       { borrowers: vm.borrowers },
     ] = await Promise.all(vm.routesArray);
-
     vm.loading = false;
   },
   computed: {
-    getTotalPages() {
-      const vm = this;
-      return vm.$store.getters.getTotalPages;
-    },
-    getCurrentPage() {
-      const vm = this;
-      return vm.$store.getters.getCurrentPage;
-    },
     getMusicSheets() {
       const vm = this;
       return vm.$store.getters.getMusicSheets;
@@ -335,9 +327,11 @@ export default {
     async searchFilter() {
       const vm = this;
       if (vm.search) {
+        console.log("hay search");
         try {
-          vm.$store.dispatch("getMusicSheets",
+          await vm.$store.dispatch("getMusicSheets",
             `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`);
+          console.log("searchFilter", `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`);
         } catch (error) {
           console.log(error);
         }
@@ -345,30 +339,24 @@ export default {
     },
     async downloadFile(file_id) {
       try {
-        console.log(file_id);
-        // Make an Axios GET request to fetch the file
         const response = await axios.get(`/api/sheet-file/download/${file_id}`, {
           responseType: 'blob',
         });
 
-        // Create a Blob from the response data
+        const filename = response.headers['content-disposition'].match(/filename=(.+)$/)[1];
+        const fileExt = response.headers['content-type'].split('/')[1];
         const blob = new Blob([response.data], { type: response.headers['content-type'] });
-
-        // Create a URL for the Blob
         const url = window.URL.createObjectURL(blob);
 
-        // Create a hidden anchor element for downloading the file
         const downloadLink = document.createElement('a');
         downloadLink.style.display = 'none';
         downloadLink.href = url;
-        downloadLink.download = 'my-file-name.ext'; // Set the desired file name
+        downloadLink.download = `${filename}.${fileExt}`;
 
-        // Trigger a click event on the anchor element to initiate the download
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
 
-        // Release the URL object
         window.URL.revokeObjectURL(url);
       } catch (error) {
         console.error('Error downloading file:', error);
@@ -535,16 +523,6 @@ export default {
       vm.loan.deliveryDate = date;
     },
   },
-  mounted() {
-    document.title = 'Partituras';
-  },
-  watch: {
-    'search': async function (newVal, oldVal) {
-      const vm = this;
-      const url = "api/music-sheets?page=1";
-      !newVal && await vm.$store.dispatch("getMusicSheets", url);
-    }
-  }
 }
 
 </script>

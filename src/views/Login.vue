@@ -2,18 +2,18 @@
   <v-container fill-height>
     <v-row align="center" justify="center">
       <v-col cols="12" md="6">
-        <v-form>
-          <v-card dark elevation="6" color="#30314f">
-            <v-toolbar color="#4c4e7e" dark>
-              <v-row>
-                <v-col cols="12" align="center">
-                  <v-list-item-title class="white--text text-h6 text-uppercase">
-                    Bienvenido
-                  </v-list-item-title>
-                </v-col>
-              </v-row>
-            </v-toolbar>
-            <v-card-text class="mt-6">
+        <v-card dark elevation="6" color="#30314f">
+          <v-toolbar color="#4c4e7e" dark>
+            <v-row>
+              <v-col cols="12" align="center">
+                <v-list-item-title class="white--text text-h6 text-uppercase">
+                  Bienvenido
+                </v-list-item-title>
+              </v-col>
+            </v-row>
+          </v-toolbar>
+          <v-card-text class="mt-6">
+            <v-form @submit.prevent="login" ref="loginForm">
               <v-text-field :error-messages="emailError" placeholder="Email" outlined prepend-icon="mdi-account"
                 name="email" label="Email" :rules="[rules.required, rules.email]" id="email" type="text"
                 v-model="form.email"></v-text-field>
@@ -22,16 +22,14 @@
                 hint="La contraseña debe contener al menos 8 caracteres" :type="showPassword ? 'text' : 'password'"
                 @click:append="showPassword = !showPassword" counter v-model="form.password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'
                   "></v-text-field>
-            </v-card-text>
-            <v-card-actions fill-height>
-              <v-row class="pb-4">
-                <v-col align="center" cols="12">
-                  <v-btn color="#4c4e7e" @click="login">Iniciar Sesión</v-btn>
+              <v-row justify="center">
+                <v-col cols="12">
+                  <v-btn type="submit" block x-large color="#4c4e7e">Iniciar Sesión</v-btn>
                 </v-col>
               </v-row>
-            </v-card-actions>
-          </v-card>
-        </v-form>
+            </v-form>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -64,10 +62,8 @@ export default {
       const vm = this;
       try {
         await vm.$store.dispatch('login', this.form);
-        vm.$router.push('dashboard');
       } catch (error) {
         vm.errors = error.response.data.errors;
-        console.log(vm.errors.email);
       }
     },
   },

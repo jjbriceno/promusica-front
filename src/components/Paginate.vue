@@ -1,46 +1,65 @@
 <template>
     <div class="text-center py-4">
-        <v-pagination class="pagination" :total-visible="7" v-model="options.page" :length="options.length"
-            circle></v-pagination>
+        <v-pagination class="pagination" :total-visible="7" v-model="getCurrentPage"
+            :length="$store.state.musicSheet.lastPage" circle></v-pagination>
     </div>
 </template>
 <script>
 export default {
     props: {
-        page: {
-            type: Number,
-            default: 1,
-            required: true
-        },
-        length: {
-            type: Number,
-            required: true
-        },
         search: {
             type: String,
             default: '',
-            required: true
+            required: false
         }
     },
     data() {
+        const vm = this;
         return {
             options: {
-                page: this.page,
-                length: this.length
+                search: vm.search,
             }
         }
     },
+    async created() {
+        const vm = this;
+        const url = "api/music-sheets?page=1"
+        await vm.$store.dispatch("getMusicSheets", url);
+    },
+    computed: {
+        getCurrentPage: {
+            get() {
+                const vm = this;
+                return vm.$store.state.musicSheet.currentPage;
+            },
+            async set(value) {
+                const vm = this;
+                await vm.$store.dispatch('setCurrentPage', value);
+            }
+
+        },
+    },
     watch: {
-        "options.page": async function () {
+        "getCurrentPage": async function (newVal, oldVal) {
             const vm = this;
+            vm.options.search && (vm.options.search = vm.search.trim());
+            if (vm.search && newVal === 1) {
+                return
+            }
             const url = (vm.search ?
                 "api/music-sheets/search?search=" + encodeURIComponent(vm.search) + "&page=" :
-                "api/music-sheets?page=") + encodeURIComponent(vm.options.page);
+                "api/music-sheets?page=") + encodeURIComponent(newVal);
             await vm.$store.dispatch('getMusicSheets', url);
         },
         "length": async function (newVal, _) {
             const vm = this;
             vm.options.length = newVal;
+        },
+        'search': async function (newVal, oldVal) {
+            if (!newVal) {
+                const vm = this;
+                await vm.$store.dispatch('getMusicSheets', "api/music-sheets?page=1");
+            }
         }
     }
 }

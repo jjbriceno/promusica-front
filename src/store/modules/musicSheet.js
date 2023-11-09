@@ -1,9 +1,7 @@
-import Vue from 'vue'; // this should be at the top level
-
 export default {
     state: {
         items: [],
-        currentPage: null,
+        currentPage: 1,
         lastPage: null,
         total: null,
         perPage: null
@@ -30,21 +28,25 @@ export default {
             state.perPage = data?.meta.per_page || null;
             state.total = data?.meta.total || null;
         },
-        UPDATE_MUSIC_SHEET(state,data) {
+        UPDATE_MUSIC_SHEET(state, data) {
             Object.assign(state.items[data.index], data.item);
         },
         ADD_MUSIC_SHEET(state, data) {
             state.items.push(data.item);
+        },
+        SET_CURRENT_PAGE(state, data) {
+            state.currentPage = data;
         }
     },
     actions: {
         async getMusicSheets({ commit }, url) {
+            
             try {
-                let response = await axios.get(url);
-                commit("SET_MUSIC_SHEETS", response.data);
+                let { data } = await axios.get(url);
+                await commit("SET_MUSIC_SHEETS", data);
             } catch (error) {
                 if (error.status === 401) {
-                    commit("SET_MUSIC_SHEETS", null);
+                    await commit("SET_MUSIC_SHEETS", null);
                 }
             }
         },
@@ -57,6 +59,9 @@ export default {
         async setMusicSheets({ commit }, data) {
             await commit("SET_MUSIC_SHEETS", data);
         },
+        async setCurrentPage({ commit }, data) {
+            await commit("SET_CURRENT_PAGE", data);
+        }
     },
     modules: {
     }
