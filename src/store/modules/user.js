@@ -24,7 +24,7 @@ export default {
     actions: {
         async logout({ commit }) {
             let response = await axios.post('logout');
-            if (response.status === 204) {
+            if (response.status === 204 || response.status === 200) {
                 await commit("SET_USER", {})
                 await commit("SET_AUTH", false);
                 await router.push('/');
@@ -34,7 +34,7 @@ export default {
         async login({ dispatch }, credentials) {
             await axios.get('sanctum/csrf-cookie');
             let response = await axios.post('login', credentials);
-            if (response.status === 204) {
+            if (response.status === 200 || response.status === 204) {
                 await dispatch("getUser");
                 await router.push('dashboard');
             }
@@ -53,7 +53,7 @@ export default {
                     console.log("User is not authenticated", error.response.status);
                     await commit("SET_USER", {});
                     await commit("SET_AUTH", false);
-                    await router.push('login');
+                    return false;
                 }
             }
         }

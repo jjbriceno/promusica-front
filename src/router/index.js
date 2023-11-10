@@ -89,6 +89,12 @@ router.beforeEach(async (to, from, next) => {
       next('/');
     }
   } else {
+    if (to.path == "/" && Object.keys(from.meta).length == 0) {
+      if (await isAuth()) {
+        console.log("no auth");
+        next('/dashboard');
+      }
+    }
     next();
   }
 });

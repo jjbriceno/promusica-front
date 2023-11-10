@@ -44,7 +44,8 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="borrowers" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="borrowers" sort-by="id" loading="true" :search="search"
+        style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
@@ -195,10 +196,12 @@ export default {
     async submit() {
       try {
         const vm = this;
-        let response = await axios.post('api/borrowers/store', { ...vm.form });
+        let response = await axios.post('api/borrowers/store', vm.form);
         vm.borrowers.push(response.data.borrower);
         vm.$refs.form.reset();
-      } catch (error) { }
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     async getBorrowers() {
@@ -207,7 +210,9 @@ export default {
         let response = await axios.get('api/borrowers');
         vm.borrowers = response.data.borrowers;
         console.log(vm.borrowers);
-      } catch (error) { }
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     clear() {
@@ -236,9 +241,7 @@ export default {
     async save() {
       const vm = this;
       try {
-        let response = await axios.post('api/borrowers/edit', {
-          ...vm.editForm,
-        });
+        let response = await axios.post('api/borrowers/edit', vm.editForm);
         if (vm.isEdit) {
           Object.assign(vm.borrowers[vm.editIndex], response.data.borrower);
         } else {
@@ -281,7 +284,9 @@ export default {
           vm.borrowers.splice(vm.deleteIndex, 1);
         });
         vm.dialogDelete = false;
-      } catch (error) { }
+      } catch (error) {
+        console.log(error);
+       }
     },
   },
 

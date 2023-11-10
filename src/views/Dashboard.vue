@@ -87,9 +87,10 @@
               <v-autocomplete :error-messages="borrowerError" :items="borrowers" item-text="name" item-value="id"
                 v-model="loan.borrowerId" label="Prestatario" outlined></v-autocomplete>
 
-              <v-text-field :error-messages="loanCuantityError" v-model.number="loan.cuantity" placeholder="Cantidad"
+              <v-text-field :error-messages="loanCuantityError" v-model="loan.cuantity" placeholder="Cantidad"
                 name="Cantidad" label="Cantidad" id="id" type="number" min="1" :max="loan.maxCuantity"
-                outlined></v-text-field>
+                outlined>
+              </v-text-field>
 
               <DatePicker :dateError="dateError" @selectedDate="setDate"></DatePicker>
 
@@ -575,7 +576,14 @@ export default {
     },
   },
   watch: {
-    
+    'loan.cuantity': function (newVal, oldVal) {
+      const vm = this;
+      console.log(newVal, vm.loan.maxCuantity);
+      if (newVal > vm.loan.maxCuantity) {
+        vm.loan.cuantity = '';
+      }
+    },
+
   }
 }
 
