@@ -91,7 +91,7 @@
                 name="Cantidad" label="Cantidad" id="id" type="number" min="1" :max="loan.maxCuantity"
                 outlined></v-text-field>
 
-              <DatePicker @selectedDate="setDate"></DatePicker>
+              <DatePicker :dateError="dateError" @selectedDate="setDate"></DatePicker>
 
               <v-text-field v-model="loan.title" placeholder="Título" name="title" label="Título" id="id" outlined
                 disabled></v-text-field>
@@ -299,6 +299,10 @@ export default {
     vm.loading = false;
   },
   computed: {
+    dateError() {
+      const vm = this;
+      return !vm.loan.deliveryDate && vm.loanErrors.deliveryDate[0] ? vm.loanErrors.deliveryDate[0] : '';
+    },
     borrowerError() {
       const vm = this;
       return !vm.loan.borrowerId && vm.loanErrors.borrowerId[0] ? vm.loanErrors.borrowerId[0] : '';
@@ -560,6 +564,7 @@ export default {
 
     resetLoan() {
       const vm = this;
+      vm.resetLoanErrors();
       vm.loan = Object.assign({}, {});
       vm.loanDialog = !vm.loanDialog;
     },
