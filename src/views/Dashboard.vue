@@ -83,15 +83,22 @@
           </v-toolbar>
           <v-card-text class="mt-6">
             <v-form @submit.prevent="saveLoan" ref="loanForm">
-              <v-autocomplete :items="borrowers" item-text="name" item-value="id" v-model="loan.borrowerId"
-                label="Prestatario" outlined></v-autocomplete>
-              <v-text-field v-model.number="loan.cuantity" placeholder="Cantidad" name="Cantidad" label="Cantidad" id="id"
-                type="number" min="1" :max="loan.maxCuantity" outlined></v-text-field>
+
+              <v-autocomplete :error-messages="borrowerError" :items="borrowers" item-text="name" item-value="id"
+                v-model="loan.borrowerId" label="Prestatario" outlined></v-autocomplete>
+
+              <v-text-field :error-messages="loanCuantityError" v-model.number="loan.cuantity" placeholder="Cantidad"
+                name="Cantidad" label="Cantidad" id="id" type="number" min="1" :max="loan.maxCuantity"
+                outlined></v-text-field>
+
               <DatePicker @selectedDate="setDate"></DatePicker>
+
               <v-text-field v-model="loan.title" placeholder="Título" name="title" label="Título" id="id" outlined
                 disabled></v-text-field>
+
               <v-autocomplete v-model="loan.authorId" item-text="full_name" item-value="id" outlined label="Autor"
                 :items="authors" disabled></v-autocomplete>
+
               <v-select :items="genders" item-text="name" item-value="id" v-model="loan.genderId" label="Géneros" outlined
                 disabled></v-select>
               <!-- Location -->
@@ -101,6 +108,7 @@
               <!-- Gaveta -->
               <v-select :items="cabinets" item-text="name" item-value="id" v-model="loan.cabinetId" label="Gaveta"
                 outlined disabled></v-select>
+
               <v-card-actions>
                 <v-btn dark color="red" @click="resetLoan">Cancelar</v-btn>
                 <v-spacer></v-spacer>
@@ -211,7 +219,18 @@ export default {
       loanDialog: false,
       loanIndex: '',
       loanCuantity: '',
-      loan: {},
+      loan: {
+        id: '',
+        title: '',
+        authorId: '',
+        genderId: '',
+        locationId: '',
+        drawerId: '',
+        cabinetId: '',
+        available: '',
+        cuantity: '',
+        maxCuantity: '',
+      },
       headers: [
         {},
         {
@@ -252,6 +271,11 @@ export default {
         drawerId: '',
         genderId: '',
       },
+      loanErrors: {
+        borrowerId: '',
+        cuantity: '',
+        deliveryDate: '',
+      },
       routes:
         [
           "authors",
@@ -275,6 +299,14 @@ export default {
     vm.loading = false;
   },
   computed: {
+    borrowerError() {
+      const vm = this;
+      return !vm.loan.borrowerId && vm.loanErrors.borrowerId[0] ? vm.loanErrors.borrowerId[0] : '';
+    },
+    loanCuantityError() {
+      const vm = this;
+      return (!vm.loan.cuantity && vm.loanErrors.cuantity[0]) ? vm.loanErrors.cuantity[0] : '';
+    },
     getMusicSheets() {
       const vm = this;
       return vm.$store.getters.getMusicSheets;
@@ -490,26 +522,40 @@ export default {
         locationId: item.location.id,
         drawerId: parseInt(item.location.drawer_id),
         cabinetId: parseInt(item.location.cabinet_id),
+        available: item.available,
         cuantity: vm.loanCuantity,
         maxCuantity: item.available,
       };
     },
+    resetLoanErrors() {
+      const vm = this;
+      vm.loanErrors = {
+        borrowerId: '',
+        cuantity: '',
+        deliveryDate: '',
+      };
+    },
 
     async saveLoan() {
+      const vm = this;
+      vm.resetLoanErrors();
       try {
-        const vm = this;
-        let response = await axios.post('api/loan/store', { ...vm.loan });
+        await axios.post('api/loan/store', vm.loan);
         vm.loanCuantity = vm.loan.cuantity;
         vm.music_sheets[vm.loanIndex].available -= vm.loanCuantity;
 
-        let updateResponse = await axios.post(`api/music-sheets/update`, {
+        // TODO update music sheet
+        await axios.post(`api/music-sheets/update`, {
           id: vm.loan.id,
           cuantity: vm.loan.cuantity,
         });
 
         vm.$refs.loanForm.reset();
         vm.loanDialog = !vm.loanDialog;
-      } catch (error) { }
+      } catch (error) {
+        vm.loanErrors = error.response.data.errors;
+        console.log(vm.loanErrors);
+      }
     },
 
     resetLoan() {
@@ -523,6 +569,9 @@ export default {
       vm.loan.deliveryDate = date;
     },
   },
+  watch: {
+    
+  }
 }
 
 </script>
