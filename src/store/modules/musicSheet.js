@@ -18,6 +18,9 @@ export default {
         },
         getItemsPerPage(state) {
             return state.perPage;
+        },
+        getItemIndex(state, item) {
+            return state.items.indexOf(item);
         }
     },
     mutations: {
@@ -36,11 +39,11 @@ export default {
         },
         SET_CURRENT_PAGE(state, data) {
             state.currentPage = data;
-        }
+        },
     },
     actions: {
         async getMusicSheets({ commit }, url) {
-            
+
             try {
                 let { data } = await axios.get(url);
                 await commit("SET_MUSIC_SHEETS", data);
@@ -61,7 +64,7 @@ export default {
         },
         async setCurrentPage({ commit }, data) {
             await commit("SET_CURRENT_PAGE", data);
-        }
+        },
     },
     modules: {
     }

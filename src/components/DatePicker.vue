@@ -37,8 +37,15 @@ export default {
   }),
 
   computed: {
-    computedDateFormatted() {
-      return this.formatDate(this.date);
+    computedDateFormatted: {
+      get() {
+        return this.formatDate(this.date);
+
+      },
+      set(value) {
+        this.date = this.parseDate(value);
+        this.$emit('selectedDate', this.date);
+      }
     },
     currentDate() {
       return new Date().toISOString().slice(0, 10);

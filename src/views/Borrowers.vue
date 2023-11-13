@@ -6,7 +6,7 @@
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-subtitle> Registrar nuevo prestatario </v-card-subtitle>
-      <hr style="color: white" />
+      <hr color="#fb13c1" />
       <v-card-text>
         <v-form @submit.prevent="submit" ref="form">
           <v-container>
@@ -33,8 +33,8 @@
               </v-col>
             </v-row>
             <v-card-actions>
-              <v-btn type="submit" color="primary">Guardar</v-btn>
               <v-btn dark color="red" @click="clear">Limpiar</v-btn>
+              <v-btn type="submit" color="success">Guardar</v-btn>
             </v-card-actions>
           </v-container>
         </v-form>
@@ -49,7 +49,7 @@
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td>{{ item.id }}</td>
+              <td>&nbsp;</td>
               <td>{{ item.name.split(' ')[0] }}</td>
               <td>{{ item.name.split(' ')[1] }}</td>
               <td>{{ item.email }}</td>
@@ -82,8 +82,8 @@
     </v-card>
     <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="dialog" :overlay="false" max-width="700px"
       transition="dialog-transition">
-      <v-card class="">
-        <v-toolbar dark color="#4527a0">
+      <v-card dark color="#4c4e7e">
+        <v-toolbar color="#393c5f">
           <v-toolbar-title>Editar datos del prestatario</v-toolbar-title>
         </v-toolbar>
         <v-card-text class="pt-8">
@@ -99,9 +99,9 @@
             <v-text-field placeholder="Dirección" name="address" label="Dirección" id="address" outlined
               v-model="editForm.address"></v-text-field>
             <v-card-actions>
-              <v-btn type="submit" color="primary">Guardar</v-btn>
-              <v-spacer></v-spacer>
               <v-btn dark color="red" @click="cancel">Cancelar</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn type="submit" color="success">Guardar</v-btn>
             </v-card-actions>
           </v-form>
         </v-card-text>
@@ -139,10 +139,6 @@ export default {
     itemToDelete: '',
     headers: [
       {
-        text: 'Id',
-        value: 'id',
-        filterable: false,
-        align: 'left',
       },
       {
         text: 'Nombre',
@@ -286,7 +282,7 @@ export default {
         vm.dialogDelete = false;
       } catch (error) {
         console.log(error);
-       }
+      }
     },
   },
 
@@ -296,8 +292,8 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .td {
-  text-align: center !important;
+  text-align: left !important;
 }
 </style>

@@ -40,8 +40,8 @@ export default {
   data: () => ({
     showPassword: false,
     form: {
-      email: '',
-      password: '',
+      email: 'bricenoj9@gmail.com',
+      password: 'password',
     },
     rules: {
       required: (value) => !!value || 'Requerido',
@@ -62,19 +62,21 @@ export default {
       const vm = this;
       try {
         await vm.$store.dispatch('login', this.form);
+
       } catch (error) {
         vm.errors = error.response.data.errors;
+        console.log(error);
       }
     },
   },
   computed: {
     emailError() {
       const vm = this;
-      return ("email" in vm.errors) ? vm.errors.email[0] : '';
+      return vm.errors ? (("email" in vm.errors) ? vm.errors.email[0] : '') : '';
     },
     passwordError() {
       const vm = this;
-      return ("password" in vm.errors) ? vm.errors.password[0] : '';
+      return vm.errors ? (("password" in vm.errors) ? vm.errors.password[0] : '') : '';
     }
   },
   watch: {

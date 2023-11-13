@@ -12,10 +12,10 @@
       <hr color="#fb13c1" />
       <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="dialog" :overlay="false" max-width="700px"
         transition="dialog-transition">
-        <v-card class="">
-          <v-toolbar dark color="#4527a0">
-            <v-toolbar-title>{{
-              isEdit ? 'Editar partitura' : 'Agregar nueva partitura'
+        <v-card dark color="#4c4e7e">
+          <v-toolbar dark color="#393c5f">
+            <v-toolbar-title class="font-weight-black white--text text-subtitle-1 text-uppercase">{{
+              isEdit ? 'Editar autor' : 'Agregar nuevo autor'
             }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
@@ -23,9 +23,9 @@
               <v-text-field v-model="form.fullName" placeholder="Nombre completo" name="name" label="Nombre completo"
                 id="id" outlined></v-text-field>
               <v-card-actions>
-                <v-btn type="submit" color="primary">Guardar</v-btn>
-                <v-spacer></v-spacer>
                 <v-btn dark color="error" @click="cancel">Cancelar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn type="submit" color="success">Guardar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
@@ -34,11 +34,12 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="authors" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="authors" sort-by="id" loading="true" :search="search"
+        style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
-            <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td class="td">{{ item.id }}</td>
+            <tr class="on-hover-bg td" :style="hoverColors(hover)">
+              <td class="td">&nbsp;</td>
               <td class="td">{{ item.full_name }}</td>
               <td class="td">
                 <v-tooltip bottom>
@@ -98,22 +99,19 @@ export default {
       deleteIndex: '',
       headers: [
         {
-          text: 'Id',
-          value: 'id',
-          filterable: false,
-          align: 'center',
+
         },
         {
           text: 'Nombre',
           value: 'full_name',
-          align: 'center',
+          align: 'left',
         },
         {
           text: '',
           value: 'actions',
           sortable: false,
           filterable: false,
-          align: 'center',
+          align: 'left',
         },
       ],
       authors: [],
@@ -204,14 +202,11 @@ export default {
       vm.dialogDelete = !vm.dialogDelete;
     },
   },
-  mounted() {
-    document.title = 'Autores';
-  },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .td {
-  text-align: center !important;
+  text-align: left !important;
 }
 </style>

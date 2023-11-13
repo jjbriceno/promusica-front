@@ -12,6 +12,20 @@
       <v-spacer></v-spacer>
       <UserMenu v-if="$store.state.user.auth" />
     </v-app-bar>
+
+
+    <v-snackbar color="success" top timeout="2500" v-model="snackbar" class="mt-16">
+      <span class="d-flex align-center white--text">
+        <v-icon class="mr-2">mdi-bell</v-icon>
+        <span>{{ " Registro guardado con exito " }}</span>
+      </span>
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
+          x
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <v-main>
       <!-- <Notification :value="true"/> -->
       <v-container fluid fill-height>
@@ -42,7 +56,10 @@ export default {
     Notification,
   },
   data() {
-    return {};
+    return {
+      snackbar: true,
+      text: `Hello, I'm a snackbar`,
+    };
   },
 };
 </script>

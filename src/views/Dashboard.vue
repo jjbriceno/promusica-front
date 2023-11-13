@@ -88,8 +88,7 @@
                 v-model="loan.borrowerId" label="Prestatario" outlined></v-autocomplete>
 
               <v-text-field :error-messages="loanCuantityError" v-model="loan.cuantity" placeholder="Cantidad"
-                name="Cantidad" label="Cantidad" id="id" type="number" min="1" :max="loan.maxCuantity"
-                outlined>
+                name="Cantidad" label="Cantidad" id="id" type="number" min="1" :max="loan.maxCuantity" outlined>
               </v-text-field>
 
               <DatePicker :dateError="dateError" @selectedDate="setDate"></DatePicker>
@@ -122,7 +121,8 @@
 
       <v-card-title>
         <v-text-field dark @keyup.enter="searchFilter" v-model="search" append-icon="mdi-magnify" label="Buscar"
-          single-line hide-details></v-text-field>
+          single-line hide-details>
+        </v-text-field>
       </v-card-title>
 
       <v-data-table :headers="headers" :items="getMusicSheets" sort-by="id" :loading="loading"
@@ -134,8 +134,9 @@
               <td class="td">{{ item.title }}</td>
               <td class="td">{{ item.author.full_name }}</td>
               <td class="td">
-                <v-progress-linear :value="item.available" height="12" color="primary" dark rounded>
-                  {{ item.available }}
+                <v-progress-linear :value="(item.available * 100 / item.cuantity)" height="18" color="primary" dark
+                  rounded>
+                  {{ item.available + "/" + item.cuantity }}
                 </v-progress-linear>
               </td>
               <td class="td">{{ item.gender.name }}</td>
@@ -221,7 +222,7 @@ export default {
       loanIndex: '',
       loanCuantity: '',
       loan: {
-        id: '',
+        musicSheetId: '',
         title: '',
         authorId: '',
         genderId: '',
@@ -243,7 +244,7 @@ export default {
           value: 'author.full_name',
         },
         {
-          text: 'Cantidad',
+          text: 'Disponible / Total',
           value: 'available',
           filterable: false,
         },
@@ -314,7 +315,7 @@ export default {
     },
     getMusicSheets() {
       const vm = this;
-      return vm.$store.getters.getMusicSheets;
+      return this.$store.getters.getMusicSheets;
     },
     getItemsPerPage() {
       const vm = this;
@@ -380,7 +381,7 @@ export default {
           responseType: 'blob',
         });
 
-        const filename = response.headers['content-disposition'].match(/filename=(.+)$/)[1];
+        const filename = response.headers['content-disposition'].match(/filename=(.+)$/)[1].replace(/"/g, '');
         const fileExt = response.headers['content-type'].split('/')[1];
         const blob = new Blob([response.data], { type: response.headers['content-type'] });
         const url = window.URL.createObjectURL(blob);
@@ -469,7 +470,7 @@ export default {
       const vm = this;
       vm.itemToDelete = Object.assign({}, item);
       // TODO: Remove item from store
-      vm.deleteIndex = vm.music_sheets.findIndex((obj) => obj.id === item.id);
+      vm.deleteIndex = vm.$store.state.musicSheet.items.findIndex((obj) => obj.id === item.id);
       vm.dialogDelete = !vm.dialogDelete;
     },
 
@@ -518,9 +519,9 @@ export default {
     startLoan(item) {
       const vm = this;
       vm.loanDialog = !vm.loanDialog;
-      vm.loanIndex = vm.music_sheets.indexOf(item);
+      vm.loanIndex = vm.$store.state.musicSheet.items.indexOf(item);
       vm.loan = {
-        id: item.id,
+        musicSheetId: item.id,
         title: item.title,
         authorId: item.author.id,
         genderId: item.gender.id,
@@ -545,21 +546,13 @@ export default {
       const vm = this;
       vm.resetLoanErrors();
       try {
-        await axios.post('api/loan/store', vm.loan);
-        vm.loanCuantity = vm.loan.cuantity;
-        vm.music_sheets[vm.loanIndex].available -= vm.loanCuantity;
-
-        // TODO update music sheet
-        await axios.post(`api/music-sheets/update`, {
-          id: vm.loan.id,
-          cuantity: vm.loan.cuantity,
-        });
-
+        let { data: { music_sheet } } = await axios.post('api/loan/store', vm.loan);
+        await vm.$store.dispatch("updateMusicSheet", { index: vm.loanIndex, item: music_sheet });
         vm.$refs.loanForm.reset();
         vm.loanDialog = !vm.loanDialog;
       } catch (error) {
         vm.loanErrors = error.response.data.errors;
-        console.log(vm.loanErrors);
+        console.log(error);
       }
     },
 
@@ -578,7 +571,6 @@ export default {
   watch: {
     'loan.cuantity': function (newVal, oldVal) {
       const vm = this;
-      console.log(newVal, vm.loan.maxCuantity);
       if (newVal > vm.loan.maxCuantity) {
         vm.loan.cuantity = '';
       }

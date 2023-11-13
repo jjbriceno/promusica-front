@@ -14,11 +14,11 @@
         </v-tooltip>
       </v-card-title>
       <v-card-subtitle> Lista de géneros musicales </v-card-subtitle>
-      <hr style="color: #4527a0" />
+      <hr color="#fb13c1" />
       <v-dialog v-model="dialog" :overlay="false" max-width="700px" transition="dialog-transition">
-        <v-card class="">
-          <v-toolbar dark color="#4527a0">
-            <v-toolbar-title>{{
+        <v-card dark color="#4c4e7e">
+          <v-toolbar dark color="#393c5f">
+            <v-toolbar-title class="font-weight-black white--text text-subtitle-1 text-uppercase">{{
               isEdit ? 'Editar género' : 'Agregar nuevo género'
             }}</v-toolbar-title>
           </v-toolbar>
@@ -27,9 +27,9 @@
               <v-text-field v-model="form.genderName" name="name" label="Nombre" placeholder="Nombre" id="id"
                 outlined></v-text-field>
               <v-card-actions>
-                <v-btn type="submit" color="primary">Guardar</v-btn>
-                <v-spacer></v-spacer>
                 <v-btn dark color="error" @click="dialog = !dialog">Cancelar</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn type="submit" color="success">Guardar</v-btn>
               </v-card-actions>
             </v-form>
           </v-card-text>
@@ -38,13 +38,14 @@
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="genders" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e">
+      <v-data-table :headers="headers" :items="genders" sort-by="id" loading="true" :search="search"
+        style="background-color: #4c4e7e">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
-            <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td class="td">{{ item.id }}</td>
+            <tr class="on-hover-bg td" :style="hoverColors(hover)">
+              <td class="td">&nbsp;</td>
               <td class="td">{{ item.name }}</td>
-              <td>
+              <td class="td">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn fab x-small class="white--text mr-1" color="primary" v-on="on" v-bind="attrs"
@@ -79,21 +80,18 @@ export default {
       deleteIndex: '',
       headers: [
         {
-          text: 'Id',
-          value: 'id',
-          filterable: false,
-          align: 'center',
+
         },
         {
           text: 'Nombre',
           value: 'name',
-          align: 'center',
+          align: 'left',
         },
         {
           text: '',
           value: 'actions',
           sortable: false,
-          align: 'center',
+          align: 'left',
         },
       ],
       genders: [],
@@ -165,6 +163,6 @@ export default {
 
 <style scoped>
 .td {
-  text-align: center !important;
+  text-align: left !important;
 }
 </style>

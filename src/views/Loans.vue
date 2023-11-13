@@ -6,15 +6,16 @@
         <v-spacer></v-spacer>
       </v-card-title>
       <v-card-subtitle> Lista de préstamos </v-card-subtitle>
-      <hr style="color: #4527a0" />
+      <hr color="#fb13c1" />
       <v-card-title>
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Buscar" single-line hide-details></v-text-field>
       </v-card-title>
-      <v-data-table :headers="headers" :items="loans" sort-by="id" loading="true" :search="search" style="background-color: #4c4e7e;">
+      <v-data-table :headers="headers" :items="loans" sort-by="id" loading="true" :search="search"
+        style="background-color: #4c4e7e;">
         <template v-slot:item="{ item }">
           <v-hover v-slot="{ hover }">
             <tr class="on-hover-bg" :style="hoverColors(hover)">
-              <td>{{ item.id }}</td>
+              <td>&nbsp;</td>
               <td>{{ item.name }}</td>
               <td>{{ item.loans.length }}</td>
               <td>{{ item.total_music_sheets }}</td>
@@ -30,7 +31,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn fab x-small class="white--text mr-1" color="cyan" v-on="on" @click="viewLoanDetails(item)"
+                    <v-btn fab x-small class="white--text mr-1" color="primary" v-on="on" @click="viewLoanDetails(item)"
                       v-bind="attrs">
                       <v-icon> mdi-eye </v-icon>
                     </v-btn>
@@ -73,25 +74,25 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
       <v-dialog @click:outside="cancel" @keydown.esc="cancel" v-model="viewDetailsDialog" :overlay="false"
         max-width="1000px" transition="dialog-transition">
-        <v-card class="">
-          <v-toolbar dark color="#4527a0">
+        <v-card dark elevation="8" color="#4c4e7e">
+          <v-toolbar dark color="#393c5f">
             <v-toolbar-title>{{ borrowerName }}</v-toolbar-title>
           </v-toolbar>
           <v-card-text class="pt-8">
-            <v-data-table :headers="dialogHeaders" :items="borrowerLoans" sort-by="id" loading="true" :search="search">
+            <v-data-table :headers="dialogHeaders" :items="borrowerLoans" sort-by="id" loading="true" :search="search"
+              style="background-color: #4c4e7e;">
               <template v-slot:item="{ item }">
                 <v-hover v-slot="{ hover }">
                   <tr class="on-hover-bg" :style="hoverColors(hover)">
-                    <td>{{ item.id }}</td>
+                    <td>&nbsp;</td>
                     <td>{{ item.loan_info.title }}</td>
                     <td>{{ item.loan_info.author }}</td>
                     <td>{{ item.loan_date }}</td>
                     <td>{{ item.delivery_date }}</td>
                     <td>{{ item.cuantity }}</td>
-                    <td class="td">
+                    <td>
                       <!-- <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn
@@ -131,9 +132,7 @@
     </v-card>
   </v-container>
 </template>
-
 <script>
-
 export default {
   data: () => ({
     search: '',
@@ -148,9 +147,7 @@ export default {
     returningLoan: {},
     headers: [
       {
-        text: 'Id',
-        value: 'id',
-        filterable: false,
+
       },
       {
         text: 'Prestatario',
@@ -173,9 +170,6 @@ export default {
 
     dialogHeaders: [
       {
-        text: 'Id',
-        value: 'id',
-        filterable: false,
       },
       {
         text: 'Título',
