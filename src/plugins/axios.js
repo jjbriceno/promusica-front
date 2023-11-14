@@ -26,4 +26,4 @@ const axios = axios_.create({
 //     }
 //   );
 
-window.axios = axios
+export default axios;

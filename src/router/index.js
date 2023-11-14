@@ -77,7 +77,7 @@ const router = new VueRouter({
 });
 
 async function isAuth() {
-  return await store.dispatch("getUser");
+  return await store.getters.auth;
 }
 
 router.beforeEach(async (to, from, next) => {
