@@ -1,20 +1,18 @@
-import axios_ from 'axios'
+import axios from "axios";
 
-const axios = axios_.create({
-    baseURL: process.env.VUE_APP_API_URL,
-    timeout: 2000,
-    headers: {
-        common:
-            { 
-                "Accept": "application/json", 
-                "Content-Type": "application/json", 
-                "X-Requested-With": "XMLHttpRequest" 
-            },
-        },
-    withCredentials: true
+const instance = axios.create({
+  baseURL: process.env.VUE_APP_API_URL,
+  timeout: 2000,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  },
+  withXSRFToken: true,
+  withCredentials: true,
 });
 
-// axios.interceptors.response.use(
+// instance.interceptors.response.use(
 //     (response) => {
 //       return response;
 //     },
@@ -26,4 +24,4 @@ const axios = axios_.create({
 //     }
 //   );
 
-export default axios;
+export default instance;

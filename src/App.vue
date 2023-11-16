@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background-color: #393c5f;">
+  <v-app style="background-color: #393c5f">
     <Drawer v-if="$store.state.user.auth" />
     <v-app-bar dark color="#30314f" app>
       <v-app-bar-nav-icon>
@@ -13,8 +13,13 @@
       <UserMenu v-if="$store.state.user.auth" />
     </v-app-bar>
 
-
-    <v-snackbar color="success" top timeout="2500" v-model="snackbar" class="mt-16">
+    <v-snackbar
+      color="success"
+      top
+      timeout="2500"
+      v-model="snackbar"
+      class="mt-16"
+    >
       <span class="d-flex align-center white--text">
         <v-icon class="mr-2">mdi-bell</v-icon>
         <span>{{ " Registro guardado con exito " }}</span>
@@ -37,23 +42,19 @@
     <!-- Add the footer here -->
     <v-footer color="#30314f">
       <v-spacer></v-spacer>
-      <div class="text-center white--text">
-        &copy; 2023 Your Company Name
-      </div>
+      <div class="text-center white--text">&copy; 2023 Your Company Name</div>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-import Drawer from './components/Drawer.vue';
-import UserMenu from './components/UserMenu.vue';
-import Notification from './components//Notification.vue';
+import Drawer from "./components/Drawer.vue";
+import UserMenu from "./components/UserMenu.vue";
 
 export default {
   components: {
     Drawer,
     UserMenu,
-    Notification,
   },
   data() {
     return {
