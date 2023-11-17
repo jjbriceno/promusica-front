@@ -89,6 +89,7 @@
 </template>
 <script>
 export default {
+  name: "calendarComponent",
   data: () => ({
     focus: "",
     type: "month",
