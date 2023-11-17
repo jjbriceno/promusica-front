@@ -4,7 +4,10 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 import axios from "@/plugins/axios";
+import Cookie from "js-cookie";
+
 window.axios = axios;
+window.Cookie = Cookie;
 
 Vue.config.productionTip = false;
 

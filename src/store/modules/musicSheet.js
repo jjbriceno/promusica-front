@@ -1,3 +1,6 @@
+import Cookie from "js-cookie";
+import axios from "@/plugins/axios";
+
 export default {
   state: {
     items: [],
@@ -44,8 +47,11 @@ export default {
   actions: {
     async getMusicSheets({ commit }, url) {
       try {
-        // eslint-disable-next-line no-undef
-        let { data } = await axios.get(url);
+        let { data } = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${Cookie.get("token")}`,
+          },
+        });
         await commit("SET_MUSIC_SHEETS", data);
       } catch (error) {
         if (error.status === 401) {

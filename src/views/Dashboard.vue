@@ -514,7 +514,12 @@ export default {
       return vm.routes
         .map((route) => {
           // eslint-disable-next-line no-undef
-          return axios.get("api" + "/" + route);
+          return axios.get(route, {
+            headers: {
+              // eslint-disable-next-line no-undef
+              Authorization: "Bearer " + Cookie.get("token"),
+            },
+          });
         })
         .map(async (promise) => {
           const result = await promise;
@@ -570,11 +575,11 @@ export default {
         try {
           await vm.$store.dispatch(
             "getMusicSheets",
-            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
+            `music-sheets/search?search=${encodeURIComponent(vm.search)}`
           );
           console.log(
             "searchFilter",
-            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
+            `music-sheets/search?search=${encodeURIComponent(vm.search)}`
           );
         } catch (error) {
           console.log(error);
@@ -584,12 +589,13 @@ export default {
     async downloadFile(file_id) {
       try {
         // eslint-disable-next-line no-undef
-        const response = await axios.get(
-          `/api/sheet-file/download/${file_id}`,
-          {
-            responseType: "blob",
-          }
-        );
+        const response = await axios.get(`/sheet-file/download/${file_id}`, {
+          responseType: "blob",
+          headers: {
+            // eslint-disable-next-line no-undef
+            Authorization: `Bearer ${Cookie.get("token")}`,
+          },
+        });
 
         const filename = response.headers["content-disposition"]
           .match(/filename=(.+)$/)[1]
@@ -634,7 +640,7 @@ export default {
 
         // eslint-disable-next-line no-undef
         let response = await axios.post(
-          `api/music-sheets/${vm.isEdit ? "edit" : "store"}`,
+          `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
           formData,
           {
             headers: {
@@ -721,7 +727,7 @@ export default {
       const vm = this;
       try {
         // eslint-disable-next-line no-undef
-        await axios.post(`api/music-sheets/destroy/${item.id}`);
+        await axios.post(`music-sheets/destroy/${item.id}`);
         // TODO: Remove item from store
         vm.$nextTick(() => {
           vm.music_sheets.splice(vm.deleteIndex, 1);
@@ -771,7 +777,7 @@ export default {
         let {
           data: { music_sheet },
           // eslint-disable-next-line no-undef
-        } = await axios.post("api/loan/store", vm.loan);
+        } = await axios.post("loan/store", vm.loan);
         await vm.$store.dispatch("updateMusicSheet", {
           index: vm.loanIndex,
           item: music_sheet,

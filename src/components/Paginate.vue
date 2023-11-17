@@ -29,7 +29,7 @@ export default {
   },
   async created() {
     const vm = this;
-    const url = "api/music-sheets?page=1";
+    const url = "music-sheets?page=1";
     await vm.$store.dispatch("getMusicSheets", url);
   },
   computed: {
@@ -53,10 +53,10 @@ export default {
       }
       const url =
         (vm.search
-          ? "api/music-sheets/search?search=" +
+          ? "music-sheets/search?search=" +
             encodeURIComponent(vm.search) +
             "&page="
-          : "api/music-sheets?page=") + encodeURIComponent(newVal);
+          : "music-sheets?page=") + encodeURIComponent(newVal);
       await vm.$store.dispatch("getMusicSheets", url);
     },
     length: async function (newVal) {
@@ -66,7 +66,7 @@ export default {
     search: async function (newVal) {
       if (!newVal) {
         const vm = this;
-        await vm.$store.dispatch("getMusicSheets", "api/music-sheets?page=1");
+        await vm.$store.dispatch("getMusicSheets", "music-sheets?page=1");
       }
     },
   },

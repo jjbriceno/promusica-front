@@ -154,7 +154,12 @@ export default {
       const vm = this;
       try {
         // eslint-disable-next-line no-undef
-        let response = await axios.get("api/genders");
+        let response = await axios.get("genders", {
+          headers: {
+            // eslint-disable-next-line no-undef
+            Authorization: `Bearer ${Cookie.get("token")}`,
+          },
+        });
         vm.genders = response.data.genders;
         console.log(response.data);
       } catch (error) {
@@ -171,7 +176,7 @@ export default {
       try {
         // eslint-disable-next-line no-undef
         let response = await axios.post(
-          `api/genders/${vm.isEdit ? "edit" : "store"}`,
+          `genders/${vm.isEdit ? "edit" : "store"}`,
           { ...vm.form }
         );
         if (vm.isEdit) {

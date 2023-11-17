@@ -12,4 +12,16 @@ const instance = axios.create({
   withCredentials: true,
 });
 
+instance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error && error.response.status === 419) {
+      window.location = "/";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default instance;

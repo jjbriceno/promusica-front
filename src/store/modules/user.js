@@ -1,5 +1,6 @@
 import router from "@/router";
 import auth from "@/plugins/auth";
+import Cookie from "js-cookie";
 
 export default {
   state: {
@@ -31,52 +32,60 @@ export default {
   },
   actions: {
     async logout({ commit }) {
-      let response = await auth.post("logout", {
-        headers: {
-          Authorization: `Bearer ${this.getters.getAccessToken}`,
-        },
-      });
-      if (response.status === 200) {
-        await commit("SET_ACCESS_TOKEN", null);
-        await commit("SET_USER", {});
-        await commit("SET_AUTH", false);
-        await router.push("/");
-      }
-    },
-
-    async login({ commit }, credentials) {
-      await auth.get("sanctum/csrf-cookie");
-      let response = await auth.post("login", credentials);
-      if (response.status === 200) {
-        await commit("SET_ACCESS_TOKEN", response.data.access_token);
-        await commit("SET_USER", response.data.user);
-        await commit("SET_AUTH", true);
-        await router.push("dashboard");
-      }
-    },
-    // TODO check back end to see if user is authenticated
-    async getUser({ commit }) {
       try {
-        let response = await auth.get("api/user", {
+        let response = await auth.post("logout", {
           headers: {
-            Authorization: `Bearer ${this.getters.getAccessToken}`,
+            Authorization: `Bearer ${Cookie.get("token")}`,
           },
         });
         if (response.status === 200) {
-          await commit("SET_USER", response.data);
-          await commit("SET_AUTH", true);
-          return true;
-        }
-      } catch (error) {
-        if (error.response.status === 401 || error.response.status === 419) {
-          console.log("User is not authenticated", error.response.status);
           await commit("SET_USER", {});
           await commit("SET_AUTH", false);
           await commit("SET_ACCESS_TOKEN", null);
-          return false;
+          await router.push("/");
         }
+      } catch (error) {
+        console.log(error);
       }
     },
+    async login({ commit }, credentials) {
+      try {
+        await auth.get("sanctum/csrf-cookie");
+        let response = await auth.post("login", credentials);
+        if (response.status === 200) {
+          Cookie.set("token", response.data.access_token);
+          await commit("SET_USER", response.data.user);
+          await commit("SET_AUTH", true);
+          await commit("SET_ACCESS_TOKEN", Cookie.get("token"));
+          await router.push("dashboard");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // TODO check back end to see if user is authenticated
+    // async getUser({ commit }) {
+    //   try {
+    //     let response = await auth.get("api/user", {
+    //       headers: {
+    //         Authorization: `Bearer ${this.getters.getAccessToken}`,
+    //       },
+    //     });
+    //     if (response.status === 200) {
+    //       await commit("SET_USER", response.data);
+    //       await commit("SET_AUTH", true);
+    //       return true;
+    //     }
+    //   } catch (error) {
+    //     if (error.response.status === 401 || error.response.status === 419) {
+    //       console.log("User is not authenticated", error.response.status);
+    //       await commit("SET_USER", {});
+    //       await commit("SET_AUTH", false);
+    //       await commit("SET_ACCESS_TOKEN", null);
+    //       return false;
+    //     }
+    //   }
+    // },
   },
   modules: {},
 };

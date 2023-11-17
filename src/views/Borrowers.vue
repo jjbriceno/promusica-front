@@ -306,7 +306,12 @@ export default {
       try {
         const vm = this;
         // eslint-disable-next-line no-undef
-        let response = await axios.get("api/borrowers");
+        let response = await axios.get("api/borrowers", {
+          headers: {
+            // eslint-disable-next-line no-undef
+            Authorization: `Bearer ${Cookie.get("token")}`,
+          },
+        });
         vm.borrowers = response.data.borrowers;
         console.log(vm.borrowers);
       } catch (error) {

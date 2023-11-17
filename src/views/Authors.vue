@@ -167,7 +167,12 @@ export default {
   async created() {
     const vm = this;
     // eslint-disable-next-line no-undef
-    let response = await axios.get("api/authors");
+    let response = await axios.get("authors", {
+      headers: {
+        // eslint-disable-next-line no-undef
+        Authorization: `Bearer ${Cookie.get("token")}`,
+      },
+    });
     vm.authors = response.data.authors;
   },
   methods: {
@@ -183,7 +188,7 @@ export default {
       try {
         // eslint-disable-next-line no-undef
         let response = await axios.post(
-          `api/authors/${vm.isEdit ? "edit" : "store"}`,
+          `authors/${vm.isEdit ? "edit" : "store"}`,
           { ...vm.form }
         );
         if (vm.isEdit) {
@@ -230,7 +235,7 @@ export default {
 
       try {
         // eslint-disable-next-line no-undef
-        await axios.post(`api/authors/destroy/${item.id}`);
+        await axios.post(`authors/destroy/${item.id}`);
         vm.$nextTick(() => {
           vm.authors.splice(vm.deleteIndex, 1);
         });
