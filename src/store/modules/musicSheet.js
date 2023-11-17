@@ -1,5 +1,5 @@
 import Cookie from "js-cookie";
-import axios from "@/plugins/axios";
+import api from "@/http/api";
 
 export default {
   state: {
@@ -47,7 +47,7 @@ export default {
   actions: {
     async getMusicSheets({ commit }, url) {
       try {
-        let { data } = await axios.get(url, {
+        let { data } = await api.get(url, {
           headers: {
             Authorization: `Bearer ${Cookie.get("token")}`,
           },
@@ -58,6 +58,25 @@ export default {
           await commit("SET_MUSIC_SHEETS", null);
         }
       }
+    },
+    async saveMusicSheet({ commit }, data) {
+      let response = await axios.post(
+        `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      let data = {};
+        if (vm.isEdit) {
+          data = { index: vm.editIndex, item: response.data.item };
+          await vm.$store.dispatch("updateMusicSheet", data);
+        } else {
+          data = { item: response.data.item };
+          await vm.$store.dispatch("addMusicSheet", data);
+        }
     },
     async addMusicSheet({ commit }, data) {
       await commit("ADD_MUSIC_SHEET", data);

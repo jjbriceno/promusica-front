@@ -39,6 +39,7 @@ export default {
           },
         });
         if (response.status === 200) {
+          Cookie.remove("token");
           await commit("SET_USER", {});
           await commit("SET_AUTH", false);
           await commit("SET_ACCESS_TOKEN", null);

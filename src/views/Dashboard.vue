@@ -637,25 +637,25 @@ export default {
         keys.forEach((key) => {
           formData.append(key, vm.form[key]);
         });
-
+        await vm.$store.dispatch("saveMusicSheet", fromData);
         // eslint-disable-next-line no-undef
-        let response = await axios.post(
-          `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        let data = {};
-        if (vm.isEdit) {
-          data = { index: vm.editIndex, item: response.data.item };
-          await vm.$store.dispatch("updateMusicSheet", data);
-        } else {
-          data = { item: response.data.item };
-          await vm.$store.dispatch("addMusicSheet", data);
-        }
+        // let response = await axios.post(
+        //   `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
+        //   formData,
+        //   {
+        //     headers: {
+        //       "Content-Type": "multipart/form-data",
+        //     },
+        //   }
+        // );
+        // let data = {};
+        // if (vm.isEdit) {
+        //   data = { index: vm.editIndex, item: response.data.item };
+        //   await vm.$store.dispatch("updateMusicSheet", data);
+        // } else {
+        //   data = { item: response.data.item };
+        //   await vm.$store.dispatch("addMusicSheet", data);
+        // }
         vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
       } catch (error) {
