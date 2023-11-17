@@ -294,7 +294,7 @@ export default {
       try {
         const vm = this;
         // eslint-disable-next-line no-undef
-        let response = await axios.post("api/borrowers/store", vm.form);
+        let response = await axios.post("borrowers/store", vm.form);
         vm.borrowers.push(response.data.borrower);
         vm.$refs.form.reset();
       } catch (error) {
@@ -306,7 +306,7 @@ export default {
       try {
         const vm = this;
         // eslint-disable-next-line no-undef
-        let response = await axios.get("api/borrowers", {
+        let response = await axios.get("borrowers", {
           headers: {
             // eslint-disable-next-line no-undef
             Authorization: `Bearer ${Cookie.get("token")}`,
@@ -346,7 +346,7 @@ export default {
       const vm = this;
       try {
         // eslint-disable-next-line no-undef
-        let response = await axios.post("api/borrowers/edit", vm.editForm);
+        let response = await axios.post("borrowers/edit", vm.editForm);
         if (vm.isEdit) {
           Object.assign(vm.borrowers[vm.editIndex], response.data.borrower);
         } else {
@@ -385,7 +385,7 @@ export default {
 
       try {
         // eslint-disable-next-line no-undef
-        await axios.post(`api/borrowers/destroy/${item.id}`);
+        await axios.post(`borrowers/destroy/${item.id}`);
         vm.$nextTick(() => {
           vm.borrowers.splice(vm.deleteIndex, 1);
         });

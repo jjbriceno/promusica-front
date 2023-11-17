@@ -9,6 +9,7 @@
 </template>
 <script>
 export default {
+  name: "notificationView",
   props: {
     alert: {
       type: Boolean,

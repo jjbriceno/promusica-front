@@ -265,7 +265,7 @@ export default {
       try {
         const vm = this;
         // eslint-disable-next-line no-undef
-        let response = await axios.post("api/loan/return", {
+        let response = await axios.post("loan/return", {
           ...vm.returningLoan,
         });
         vm.$nextTick(() => {
@@ -359,7 +359,7 @@ export default {
 
       try {
         // eslint-disable-next-line no-undef
-        let response = await axios.post(`api/loan/destroy/${item.id}`);
+        let response = await axios.post(`loan/destroy/${item.id}`);
         vm.$nextTick(() => {
           vm.loans.splice(vm.deleteIndex, 1);
           vm.loans = response.data.loans;
@@ -377,7 +377,7 @@ export default {
       try {
         const vm = this;
         // eslint-disable-next-line no-undef
-        let response = await axios.get("api/loan", {
+        let response = await axios.get("loan", {
           headers: {
             // eslint-disable-next-line no-undef
             Authorization: `Bearer ${Cookie.get("token")}`,
