@@ -510,16 +510,10 @@ export default {
     },
     routesArray() {
       const vm = this;
-
       return vm.routes
         .map((route) => {
           // eslint-disable-next-line no-undef
-          return axios.get(route, {
-            headers: {
-              // eslint-disable-next-line no-undef
-              Authorization: "Bearer " + Cookie.get("token"),
-            },
-          });
+          return axios.get("api/" + route);
         })
         .map(async (promise) => {
           const result = await promise;
@@ -575,11 +569,11 @@ export default {
         try {
           await vm.$store.dispatch(
             "getMusicSheets",
-            `music-sheets/search?search=${encodeURIComponent(vm.search)}`
+            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
           );
           console.log(
             "searchFilter",
-            `music-sheets/search?search=${encodeURIComponent(vm.search)}`
+            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
           );
         } catch (error) {
           console.log(error);
@@ -589,12 +583,8 @@ export default {
     async downloadFile(file_id) {
       try {
         // eslint-disable-next-line no-undef
-        const response = await axios.get(`/sheet-file/download/${file_id}`, {
+        const response = await axios.get(`api/sheet-file/download/${file_id}`, {
           responseType: "blob",
-          headers: {
-            // eslint-disable-next-line no-undef
-            Authorization: `Bearer ${Cookie.get("token")}`,
-          },
         });
 
         const filename = response.headers["content-disposition"]
@@ -637,7 +627,13 @@ export default {
         keys.forEach((key) => {
           formData.append(key, vm.form[key]);
         });
-        await vm.$store.dispatch("saveMusicSheet", fromData);
+        const data = {
+          formData: formData,
+          isEdit: vm.isEdit,
+          url: `api/music-sheets/${vm.isEdit ? "edit" : "store"}`,
+          index: vm.editIndex,
+        };
+        await vm.$store.dispatch("saveMusicSheet", data);
         // eslint-disable-next-line no-undef
         // let response = await axios.post(
         //   `/music-sheets/${vm.isEdit ? "edit" : "store"}`,

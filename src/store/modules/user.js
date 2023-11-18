@@ -1,12 +1,10 @@
 import router from "@/router";
-import auth from "@/plugins/auth";
-import Cookie from "js-cookie";
+import axios from "@/plugins/axios";
 
 export default {
   state: {
     user: {},
     auth: false,
-    accessToken: null,
   },
   getters: {
     user(state) {
@@ -26,20 +24,12 @@ export default {
     SET_AUTH(state, auth) {
       state.auth = auth;
     },
-    SET_ACCESS_TOKEN(state, token) {
-      state.accessToken = token;
-    },
   },
   actions: {
     async logout({ commit }) {
       try {
-        let response = await auth.post("logout", {
-          headers: {
-            Authorization: `Bearer ${Cookie.get("token")}`,
-          },
-        });
+        let response = await axios.post("logout");
         if (response.status === 200) {
-          Cookie.remove("token");
           await commit("SET_USER", {});
           await commit("SET_AUTH", false);
           await commit("SET_ACCESS_TOKEN", null);
@@ -51,13 +41,11 @@ export default {
     },
     async login({ commit }, credentials) {
       try {
-        await auth.get("sanctum/csrf-cookie");
-        let response = await auth.post("login", credentials);
+        await axios.get("sanctum/csrf-cookie");
+        let response = await axios.post("login", credentials);
         if (response.status === 200) {
-          Cookie.set("token", response.data.access_token);
           await commit("SET_USER", response.data.user);
           await commit("SET_AUTH", true);
-          await commit("SET_ACCESS_TOKEN", Cookie.get("token"));
           await router.push("dashboard");
         }
       } catch (error) {

@@ -1,5 +1,4 @@
-import Cookie from "js-cookie";
-import api from "@/http/api";
+import axios from "@/plugins/axios";
 
 export default {
   state: {
@@ -47,11 +46,7 @@ export default {
   actions: {
     async getMusicSheets({ commit }, url) {
       try {
-        let { data } = await api.get(url, {
-          headers: {
-            Authorization: `Bearer ${Cookie.get("token")}`,
-          },
-        });
+        let { data } = await axios.get(url);
         await commit("SET_MUSIC_SHEETS", data);
       } catch (error) {
         if (error.status === 401) {
@@ -60,29 +55,19 @@ export default {
       }
     },
     async saveMusicSheet({ commit }, data) {
-      let response = await axios.post(
-        `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      let data = {};
-        if (vm.isEdit) {
-          data = { index: vm.editIndex, item: response.data.item };
-          await vm.$store.dispatch("updateMusicSheet", data);
+      try {
+        let response = await axios.post(data.url, data.fromData);
+        let mutation = {};
+        if (data.isEdit) {
+          mutation = { index: data.index, item: response.data.item };
+          await commit("UPDATE_MUSIC_SHEET", mutation);
         } else {
-          data = { item: response.data.item };
-          await vm.$store.dispatch("addMusicSheet", data);
+          mutation = { item: response.data.item };
+          await commit("ADD_MUSIC_SHEET", mutation);
         }
-    },
-    async addMusicSheet({ commit }, data) {
-      await commit("ADD_MUSIC_SHEET", data);
-    },
-    async updateMusicSheet({ commit }, data) {
-      await commit("UPDATE_MUSIC_SHEET", data);
+      } catch (error) {
+        console.log(error);
+      }
     },
     async setMusicSheets({ commit }, data) {
       await commit("SET_MUSIC_SHEETS", data);
