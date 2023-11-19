@@ -55,18 +55,14 @@ export default {
       }
     },
     async saveMusicSheet({ commit }, data) {
-      try {
-        let response = await axios.post(data.url, data.fromData);
-        let mutation = {};
-        if (data.isEdit) {
-          mutation = { index: data.index, item: response.data.item };
-          await commit("UPDATE_MUSIC_SHEET", mutation);
-        } else {
-          mutation = { item: response.data.item };
-          await commit("ADD_MUSIC_SHEET", mutation);
-        }
-      } catch (error) {
-        console.log(error);
+      let response = await axios.post(data.url, data.form);
+      let mutation = {};
+      if (data.isEdit) {
+        mutation = { index: data.index, item: response.data.item };
+        await commit("UPDATE_MUSIC_SHEET", mutation);
+      } else {
+        mutation = { item: response.data.item };
+        await commit("ADD_MUSIC_SHEET", mutation);
       }
     },
     async setMusicSheets({ commit }, data) {

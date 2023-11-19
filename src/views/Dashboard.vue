@@ -565,14 +565,9 @@ export default {
     async searchFilter() {
       const vm = this;
       if (vm.search) {
-        console.log("hay search");
         try {
           await vm.$store.dispatch(
             "getMusicSheets",
-            `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
-          );
-          console.log(
-            "searchFilter",
             `api/music-sheets/search?search=${encodeURIComponent(vm.search)}`
           );
         } catch (error) {
@@ -628,30 +623,12 @@ export default {
           formData.append(key, vm.form[key]);
         });
         const data = {
-          formData: formData,
+          form: formData,
           isEdit: vm.isEdit,
           url: `api/music-sheets/${vm.isEdit ? "edit" : "store"}`,
           index: vm.editIndex,
         };
         await vm.$store.dispatch("saveMusicSheet", data);
-        // eslint-disable-next-line no-undef
-        // let response = await axios.post(
-        //   `/music-sheets/${vm.isEdit ? "edit" : "store"}`,
-        //   formData,
-        //   {
-        //     headers: {
-        //       "Content-Type": "multipart/form-data",
-        //     },
-        //   }
-        // );
-        // let data = {};
-        // if (vm.isEdit) {
-        //   data = { index: vm.editIndex, item: response.data.item };
-        //   await vm.$store.dispatch("updateMusicSheet", data);
-        // } else {
-        //   data = { item: response.data.item };
-        //   await vm.$store.dispatch("addMusicSheet", data);
-        // }
         vm.$refs.form.reset();
         vm.dialog = !vm.dialog;
       } catch (error) {
