@@ -17,7 +17,10 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error && error.response.status === 419) {
+    if (
+      error &&
+      (error.response.status === 419 || error.response.status === 401)
+    ) {
       window.location = "/";
     }
     return Promise.reject(error);
