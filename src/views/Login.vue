@@ -84,6 +84,9 @@ export default {
       const vm = this;
       try {
         await vm.$store.dispatch("login", this.form);
+        this.$store.dispatch("setSnackbar", {
+          text: "Sesión iniciada con exito",
+        });
       } catch (error) {
         vm.errors = error.response.data.errors;
         console.log(error);

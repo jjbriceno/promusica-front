@@ -14,7 +14,7 @@
     </v-app-bar>
 
     <v-main>
-      <v-snackbar
+      <!-- <v-snackbar
         color="success"
         top
         timeout="2500"
@@ -30,8 +30,32 @@
             x
           </v-btn>
         </template>
+      </v-snackbar> -->
+      <v-snackbar
+        v-for="(snackbar, index) in snackbars.filter((s) => s.showing)"
+        :key="snackbar.text + Math.random()"
+        v-model="snackbar.showing"
+        :timeout="1500"
+        top
+        :color="snackbar.color"
+        :style="`bottom: ${index * 60 + 8}px`"
+      >
+        <span class="d-flex align-center white--text">
+          <v-icon class="mr-2">mdi-bell</v-icon>
+          <span>{{ snackbar.text }}</span>
+        </span>
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="red"
+            text
+            v-bind="attrs"
+            @click="snackbar.showing = false"
+          >
+            x
+          </v-btn>
+        </template>
       </v-snackbar>
-      <!-- <Notification :value="true"/> -->
+
       <v-container fluid fill-height>
         <v-slide-x-transition mode="out-in">
           <router-view></router-view>
@@ -49,17 +73,18 @@
 <script>
 import Drawer from "./components/Drawer.vue";
 import UserMenu from "./components/UserMenu.vue";
+import { mapState } from "vuex";
 
 export default {
   components: {
     Drawer,
     UserMenu,
   },
+  computed: {
+    ...mapState(["snackbars"]),
+  },
   data() {
-    return {
-      snackbar: true,
-      text: `Hello, I'm a snackbar`,
-    };
+    return {};
   },
 };
 </script>

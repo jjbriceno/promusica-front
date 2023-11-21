@@ -32,7 +32,6 @@ export default {
         if (response.status === 200) {
           await commit("SET_USER", {});
           await commit("SET_AUTH", false);
-          await commit("SET_ACCESS_TOKEN", null);
           await router.push("/");
         }
       } catch (error) {
